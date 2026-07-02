@@ -25,10 +25,10 @@ Keep the delegation tree **shallow — two, at most three, levels.** A principal
 
 ## The board (pending · in progress · done · blocked)
 
-The `.conductor/` ledger *is* the team board (full schema in `state-and-resume.md`). Every task has a `status` (`pending` / `in_progress` / `done` / `blocked`), an `assignee` (who owns it — `principal`, `engineer:<lane>`, `junior:<lane>`, or a specialist), and its `dependsOn` edges. Render it any time with:
+The `.conductor/` ledger *is* the team board (full schema in `state-and-resume.md`). Every task has a `status` (`pending` / `in_progress` / `done` / `blocked`), an `assignee` (who owns it — `principal`, `engineer:<lane>`, `junior:<lane>`, or a specialist), and its `dependsOn` edges. Render it any time with (`<plugin-root>` = Conductor's install directory — the plugin folder holding `skills/` and `hooks/`; in a checkout of the Conductor repo, just `.`):
 
 ```
-python hooks/ledger.py board .conductor/state.json
+python <plugin-root>/hooks/ledger.py board .conductor/state.json
 ```
 
 …which prints the four columns with owner, dependencies, and gate state — the at-a-glance "who's working on what" view, for you, for the human, and for a resuming session. **The discipline that makes it true:**
@@ -76,7 +76,7 @@ What does **not** warrant a question: things you can determine yourself (the sta
 
 - **Record the gate per task.** As you clear each criterion, write it into the task's `gate` object in the ledger (the Test Architect proves *correct*; the Security Gate verdict gives *secure*; review gives *clean*; acceptance criteria give *complete*; doc refresh gives *documented*; the plain-language summary gives *explained*).
 - **A Stop hook holds the line.** If you try to end a turn while an `in_progress` task's `gate` is on record as failing (any criterion `false`), the **`stop_gate.py` Stop hook blocks the stop and sends you back to finish** — unless you've legitimately set the task `blocked` or `waitingOnHuman`. It's conservative (an absent gate never traps you; a passing gate never blocks you), so it only catches the one bad pattern: *shipping work that's recorded as not-yet-A-grade.*
-- **Check it deterministically.** `python hooks/ledger.py gate .conductor/state.json <id>` returns PASS, or FAIL with the missing criteria — the same fail-closed logic as `routing.should_escalate`. A cheaper-model worker that fails the gate escalates to the premium model and re-runs; it never just slides through.
+- **Check it deterministically.** `python <plugin-root>/hooks/ledger.py gate .conductor/state.json <id>` returns PASS, or FAIL with the missing criteria — the same fail-closed logic as `routing.should_escalate`. A cheaper-model worker that fails the gate escalates to the premium model and re-runs; it never just slides through.
 
 This is what turns "please be thorough" into a property the system actually maintains.
 

@@ -1,7 +1,9 @@
 {
   "name": "conductor",
+  "description": "Home of Conductor — a safety-railed orchestration layer that turns Claude Code into a disciplined engineering team: it plans behind an approval gate, routes work to specialist plugins, tests and security-reviews every change, and stages the result for you to ship.",
   "owner": {
-    "name": "Piyush"
+    "name": "Piyush Raghatate",
+    "url": "https://github.com/raghatatepiyush"
   },
   "plugins": [
     {

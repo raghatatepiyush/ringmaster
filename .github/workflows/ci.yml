@@ -224,9 +224,40 @@ jobs:
           esac
           echo "launcher shim smoke: real registered command denies; stub interpreters skipped."
 
-  all-green:
-    name: all-green
-    needs: guardrails
+  plugin-validate:
+    # The same check Anthropic's plugin-review pipeline runs on every submission,
+    # in both of its modes. Marketplace mode (repo root) checks marketplace.json;
+    # plugin mode (a copy without marketplace.json) is the one that parses
+    # skill/agent/command frontmatter and hooks/hooks.json. The v2.2.0 frontmatter
+    # regression was invisible to marketplace mode — this job exists so that class
+    # of bug can never ship again. The CLI is installed unpinned on purpose: the
+    # review pipeline always runs the current validator, so we validate against
+    # the same moving target.
+    name: claude plugin validate (--strict, both modes)
     runs-on: ubuntu-latest
     steps:
-      - run: echo "All guardrails matrix jobs passed."
+      - name: Check out
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+
+      - name: Install Claude Code CLI
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Validate marketplace manifest (repo root)
+        run: claude plugin validate . --strict
+
+      - name: Validate as a plugin (what the review pipeline sees)
+        run: |
+          set -eu
+          dst="$(mktemp -d)/conductor"
+          mkdir -p "$dst"
+          cp -r . "$dst"
+          rm -rf "$dst/.git"
+          rm "$dst/.claude-plugin/marketplace.json"
+          claude plugin validate "$dst" --strict
+
+  all-green:
+    name: all-green
+    needs: [guardrails, plugin-validate]
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "All guardrails matrix jobs and the plugin validation passed."

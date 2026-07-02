@@ -1,32 +1,25 @@
 {
   "name": "conductor",
-  "version": "2.2.0",
-  "description": "A lightweight orchestration layer that turns Claude Code into a disciplined senior engineering team. Conductor frames any task, plans behind an approval gate, routes each step to the best specialist plugin (or a built-in fallback), and runs a bundled Test Architect plus an adversarial Security Gate before handing back staged, reviewed work explained in plain language. Work lives on a resumable .conductor/ team board (principal → engineer → junior delegation) guarded by a six-criterion A-grade quality gate with Stop-hook teeth, and every task is right-sized to the cheapest model/effort that still holds the bar. Hard, hook-enforced safety rails — proven by a 186-case adversarial battery run in CI on macOS/Linux/Windows across Python 3.9–3.14: never commits, pushes, merges, or publishes; never touches PRODUCTION (blocked even under --dangerously-skip-permissions); opening/merging a PR and preview deploys always pause for explicit human confirmation — enforced on Bash, file writes, and every MCP tool alike (the rails arm via a tiny Python 3 hook; the SessionStart banner is your proof they're live). Stack-agnostic: it detects your project's conventions, conforms, stages the work, and hands off. You ship.",
+  "displayName": "Conductor",
+  "version": "2.2.1",
+  "description": "Turns Claude Code into a disciplined engineering team: it frames the goal, plans behind an approval gate, routes each step to the best specialist plugin (with built-in fallbacks), and runs a bundled Test Architect plus an adversarial Security Gate before handing back staged work explained in plain language. Hard hook-enforced safety rails — verified by a 191-case CI battery on macOS, Linux, and Windows — ensure it never commits, pushes, merges, or publishes, never touches production, and always pauses for explicit confirmation before a PR or preview deploy. Stack-agnostic; the only dependency is Python 3.",
   "author": {
-    "name": "Piyush"
+    "name": "Piyush Raghatate",
+    "url": "https://github.com/raghatatepiyush"
   },
   "homepage": "https://github.com/raghatatepiyush/conductor",
   "repository": "https://github.com/raghatatepiyush/conductor",
   "license": "MIT",
   "keywords": [
     "orchestration",
-    "router",
-    "testing",
-    "security",
-    "frontend",
-    "tdd",
+    "routing",
+    "delegation",
     "safety",
     "guardrails",
-    "devsecops",
-    "deployment",
-    "accessibility",
-    "mcp",
-    "plain-language",
-    "continuity",
-    "resume",
-    "model-routing",
-    "orchestration-board",
-    "delegation",
-    "quality-gate"
+    "testing",
+    "tdd",
+    "security",
+    "quality-gate",
+    "resume"
   ]
 }

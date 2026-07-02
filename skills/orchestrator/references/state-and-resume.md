@@ -74,7 +74,9 @@ Write valid JSON in exactly this shape. Keep it lean — notes capture *decision
 
 **`priority`** is a small integer where **1 is highest**; you set it from risk × value when you write the task (see Prioritization). **`profile`** is the Task Profile from `references/right-sizing.md`. **`modelUsed`/`escalated`** record what actually ran, so a model downshift is auditable (see `references/model-and-effort.md`).
 
-**v2 fields (back-compatible — a v1 ledger still validates).** **`assignee`** is who on the team owns the task (the board's "who's working on what" — see `references/team-and-delegation.md`). **`gate`** records the six A-grade criteria as you clear them; a task reaches `done` only when all six are true, and the **`stop_gate.py` Stop hook blocks finishing a turn while an `in_progress` task's gate is on record as failing** (`python hooks/ledger.py gate .conductor/state.json <id>` checks it deterministically). **`waitingOnHuman`** (top-level) is set true when you pause to ask a genuine question — honest bookkeeping, and it tells the Stop gate the pause is legitimate so it never traps you; clear it on resume. **`tokensEstimated`** keeps the running spend in view so effort is spent deliberately. Render the whole board any time with `python hooks/ledger.py board .conductor/state.json`.
+**v2 fields (back-compatible — a v1 ledger still validates).** **`assignee`** is who on the team owns the task (the board's "who's working on what" — see `references/team-and-delegation.md`). **`gate`** records the six A-grade criteria as you clear them; a task reaches `done` only when all six are true, and the **`stop_gate.py` Stop hook blocks finishing a turn while an `in_progress` task's gate is on record as failing** (`python <plugin-root>/hooks/ledger.py gate .conductor/state.json <id>` checks it deterministically). **`waitingOnHuman`** (top-level) is set true when you pause to ask a genuine question — honest bookkeeping, and it tells the Stop gate the pause is legitimate so it never traps you; clear it on resume. **`tokensEstimated`** keeps the running spend in view so effort is spent deliberately. Render the whole board any time with `python <plugin-root>/hooks/ledger.py board .conductor/state.json`.
+
+> **Where `ledger.py` lives.** The helper ships inside the Conductor **plugin**, not your project: `<plugin-root>/hooks/ledger.py`, where `<plugin-root>` is Conductor's install directory. This reference file sits at `<plugin-root>/skills/orchestrator/references/`, so the plugin root is three directories up from here (in a git checkout of the Conductor repo it's simply the repo root). Substitute the real path wherever a command says `<plugin-root>`, and use `python3` / `py` when `python` isn't on PATH. The helper is a convenience, never a dependency: every subcommand's algorithm is also written out in prose, so if it isn't runnable, follow the words.
 
 ---
 
@@ -130,7 +132,7 @@ Order the pending tasks by, in precedence:
 2. **Risk × value.** Among eligible tasks, the highest-risk / highest-value paths come first — auth, payments, data integrity, core user flows before cosmetic or low-stakes work. This is what you encode in `priority` (1 = highest) when you write the task.
 3. **Quick-win tie-break.** On a tie, prefer the task that unblocks the most downstream work, then the lower-effort one — clear the path for everything waiting behind it.
 
-`hooks/ledger.py` is the canonical implementation of this ordering: `python hooks/ledger.py next .conductor/state.json` prints the id of the highest-priority eligible task. You may call it for a deterministic pick, or follow the same algorithm yourself — either way the result matches.
+`hooks/ledger.py` is the canonical implementation of this ordering: `python <plugin-root>/hooks/ledger.py next .conductor/state.json` prints the id of the highest-priority eligible task. You may call it for a deterministic pick, or follow the same algorithm yourself — either way the result matches.
 
 ---
 
@@ -139,7 +141,7 @@ Order the pending tasks by, in precedence:
 Triggered by `/conductor:pickup` or natural language ("pickup", "resume", "where were we"):
 
 1. **Read** `.conductor/state.json` and `.conductor/PROGRESS.md`. If neither exists, say so plainly and offer to start fresh — never invent a ledger.
-2. **Validate** — `python hooks/ledger.py validate .conductor/state.json`. If it reports problems, surface them and ask before trusting the file.
+2. **Validate** — `python <plugin-root>/hooks/ledger.py validate .conductor/state.json`. If it reports problems, surface them and ask before trusting the file.
 3. **Reconcile — trust but verify.** The repo may have moved since the last checkpoint (someone committed, files were renamed, a task was finished by hand). Run read-only `git status` / `git diff --stat`, confirm the recorded `filesTouched` still exist, and look for drift. If anything is ambiguous, **flag it and ask** before resuming; then update the ledger to match reality. A ledger that lies is worse than none — this step is what keeps a cold-start resume honest.
 4. **Brief, then continue.** Print the resume briefing from `references/output-style.md` (goal · done/in-progress/pending/blocked · the next task · key decisions · any drift), pick the next task (`ledger.py next`, or the documented algorithm), and run it through the normal pipeline — behind the stage-1 gate if it's substantial.
 
@@ -159,6 +161,6 @@ By default the ledger is private (self-ignored). When the person asks to share p
 
 ## Trusting a ledger (validation & safety)
 
-- **Always validate before trusting** a ledger you didn't just write: `python hooks/ledger.py validate .conductor/state.json`.
+- **Always validate before trusting** a ledger you didn't just write: `python <plugin-root>/hooks/ledger.py validate .conductor/state.json`.
 - **Defensive reads never crash a session.** The SessionStart resume hint and any read path treat a missing or malformed ledger as simply "no ledger" — they never raise. If `state.json` is corrupt, say so and offer to rebuild it from `PROGRESS.md` rather than guessing.
 - **The ledger is Conductor's, not a control channel.** It records *your* plan and progress; it does not hand control to another tool.

@@ -2,6 +2,24 @@
 
 All notable changes to Conductor. Versions follow [semver](https://semver.org/); the format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [2.2.1] — 2026-07-03
+
+The submission-readiness release: one real defect fixed, then polish for the community-marketplace review pipeline.
+
+### Fixed
+
+- **The orchestrator skill's YAML frontmatter was invalid, so the skill loaded with no metadata.** The description contained an unquoted `rails: never …` — a colon followed by a space inside a plain YAML scalar, which YAML forbids — so the whole frontmatter failed to parse and Claude Code loaded the skill with every field silently dropped, disabling description-based auto-triggering (v2.2.0 shipped this). The description is now quoted; `claude plugin validate --strict` passes in both marketplace mode and plugin mode. The regression was invisible to repo-root validation (which only checks `marketplace.json`) and is now guarded in CI (below).
+- **Bundled-helper paths now resolve from an installed plugin.** `/conductor:pickup`, the orchestrator skill, and the reference docs invoked `python hooks/ledger.py …` relative to the repo root — correct in a checkout of this repo, wrong for an installed plugin (the helper lives under the plugin's install directory). Skill and command content now uses `${CLAUDE_PLUGIN_ROOT}` (substituted inline by Claude Code); the reference files, which are read raw, spell out how to locate `<plugin-root>` from their own path.
+
+### Added
+
+- **CI: `claude plugin validate --strict`, both modes** — marketplace mode at the repo root and plugin mode on a marketplace-less copy (the mode that actually parses skill/agent/command frontmatter and `hooks/hooks.json`). This is the same check Anthropic's plugin-review pipeline runs on every submission, so a manifest or frontmatter regression can no longer ship.
+
+### Changed
+
+- `plugin.json`: `description` cut from ~1,600 characters to three sentences (the field is UI-facing; the depth lives in the README), added `displayName`, trimmed `keywords` to ten, fuller `author`. `.claude-plugin/marketplace.json`: added the top-level marketplace `description` — previously the one `--strict` warning.
+- Docs: the guardrails battery count is **191** everywhere it's quoted (the five ReDoS perf-guard cases added after v2.2.0 hadn't been reflected in the README and `docs/hardening.md` — `python hooks/test_guardrails.py` is the source of truth).
+
 ## [2.2.0] — 2026-07-02
 
 The "arms everywhere, installable by anyone" release.

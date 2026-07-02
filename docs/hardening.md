@@ -70,16 +70,18 @@ The safety rails are only worth as much as their proof, so the adversarial batte
 Each job:
 
 1. validates the JSON manifests (`plugin.json`, `marketplace.json`, `hooks.json`);
-2. runs the **186-case** `hooks/test_guardrails.py` battery plus the `test_ledger.py` (27 cases) and `test_routing.py` batteries, and a cross-platform smoke of the `ledger.py` CLI that backs resume and the board/gate commands;
+2. runs the **191-case** `hooks/test_guardrails.py` battery plus the `test_ledger.py` (27 cases) and `test_routing.py` batteries, and a cross-platform smoke of the `ledger.py` CLI that backs resume and the board/gate commands;
 3. drives the hook over **stdin end-to-end** — real `PreToolUse` payloads (a prod-deny, a Write-secret deny, an ask) with the decision asserted, plus a smoke of the `stop_gate.py` Stop hook;
 4. smoke-tests the **launcher shim itself** — extracting the *real* registered command from `hooks.json` and running it end-to-end, including a simulated Windows Store-stub trap (fake failing `python3`/`python` ahead of a working `py`) — so the one component outside the Python batteries is verified too.
 
-A final `all-green` job gates on the whole matrix, giving a single required check to protect `main` with; its live status is the badge at the top of the README.
+A separate `plugin-validate` job runs `claude plugin validate --strict` in both of its modes — marketplace mode at the repo root and plugin mode on a marketplace-less copy (the mode that parses skill/agent/command frontmatter and `hooks.json`). This is the same check Anthropic's plugin-review pipeline runs on every submission.
+
+A final `all-green` job gates on the whole matrix plus the validation job, giving a single required check to protect `main` with; its live status is the badge at the top of the README.
 
 Run the batteries yourself any time:
 
 ```
-python3 hooks/test_guardrails.py   # 186 adversarial cases (or `python` / `py`)
+python3 hooks/test_guardrails.py   # 191 adversarial cases (or `python` / `py`)
 python3 hooks/test_ledger.py       # 27 ledger cases
 python3 hooks/test_routing.py      # routing / A-grade gate
 ```

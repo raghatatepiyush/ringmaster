@@ -59,7 +59,7 @@ A `PreToolUse` hook inspects every Bash command, every file write, and **every M
 | 🚦 Won't write a live secret to disk or touch `.git/` internals | **deny** — and a prod env / key / credentials file pauses for you |
 | 🚦 Sees through wrapped runners | `make deploy`, `npm run ship`, `bash deploy.sh` are resolved and re-checked — one indirection can't smuggle a push or a prod hit |
 
-The hook is **allow-by-default** — normal dev (`npm test`, `git status`, `git add`, local servers) runs untouched, and it will never brick a tool. Every rail is proven by a **186-case adversarial battery** running in CI on Linux, Windows, and macOS across Python 3.9 → 3.14, on every push. The full threat model — what the hook catches, what it deliberately allows, and the honest edges — lives in **[docs/hardening.md](docs/hardening.md)**.
+The hook is **allow-by-default** — normal dev (`npm test`, `git status`, `git add`, local servers) runs untouched, and it will never brick a tool. Every rail is proven by a **191-case adversarial battery** running in CI on Linux, Windows, and macOS across Python 3.9 → 3.14, on every push. The full threat model — what the hook catches, what it deliberately allows, and the honest edges — lives in **[docs/hardening.md](docs/hardening.md)**.
 
 ## How it works
 
@@ -82,7 +82,7 @@ conductor/
 │   ├── session_doctrine.py    # SessionStart banner + stack hint + resume hint
 │   ├── ledger.py              # board / next-task / gate / share helpers + CLI
 │   ├── routing.py             # Task-Profile + A-grade-gate helpers
-│   └── test_*.py              # the batteries (guardrails 186 · ledger 27 · routing)
+│   └── test_*.py              # the batteries (guardrails 191 · ledger 27 · routing)
 ├── skills/
 │   ├── orchestrator/          # the conductor skill (thin router + references/)
 │   └── test-architect/        # bundled Test Architect skill
@@ -108,7 +108,7 @@ Conductor **directs** the official specialists rather than replacing them: insta
 ## Learn more
 
 - **[docs/hardening.md](docs/hardening.md)** — the threat model: what the hook catches, what it deliberately allows, and how CI proves it on every push.
-- **[CHANGELOG.md](CHANGELOG.md)** — version history. New in **v2.2.0**: the launcher survives Windows Store python stubs (rails now arm on stock Windows), and the plugin is installable straight from this repo.
+- **[CHANGELOG.md](CHANGELOG.md)** — version history. New in **v2.2.1**: valid orchestrator-skill frontmatter (v2.2.0 shipped it broken, which disabled auto-triggering), bundled-helper paths that resolve from an installed plugin, and CI now runs `claude plugin validate --strict` in both modes.
 - **[skills/orchestrator/references/](skills/orchestrator/references/)** — the full doctrine: routing, playbooks, safety & environments, state & resume, team & delegation, right-sizing, model routing.
 
 ## License
