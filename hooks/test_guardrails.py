@@ -310,6 +310,33 @@ def runner_cases():
     return fails
 
 
+def perf_cases():
+    """ReDoS regression guard. The env-targeting regexes once had an unbounded,
+    unanchored URL-scheme alternative (`[a-z][a-z0-9+.-]*://...`) that backtracked
+    quadratically on a long token with no `://` - a 32 KB command took ~13 s and
+    blew past the 10 s hook timeout, which fails OPEN (the tool call proceeds
+    unguarded). Classification must stay ~linear, so a large input resolves well
+    inside the timeout. Returns failure msgs. See guardrails._context_regex."""
+    import time
+    fails = []
+    budget_s = 0.5  # 100 KB must classify in well under the 10 s hook timeout
+    for probe in ("a" * 100000,                       # bare long token, no '://'
+                  "kubectl -n " + "a" * 100000,       # trigger absent past a long run
+                  "oc " * 30000):                     # repeated kube binary (_KUBE_SEG gap)
+        t0 = time.perf_counter()
+        classify(probe)
+        dt = time.perf_counter() - t0
+        if dt > budget_s:
+            fails.append(f"classify({len(probe)//1000}KB token) took {dt:.2f}s "
+                         f"(> {budget_s}s budget) - possible ReDoS regression")
+    # The fix must not change what the URL alternative catches.
+    if decision_of("curl https://api.prod.acme.com/health") != "deny":
+        fails.append("prod URL no longer denied after ReDoS fix")
+    if decision_of("curl https://api.staging.acme.com/x") != "ask":
+        fails.append("staging URL no longer asked after ReDoS fix")
+    return fails
+
+
 def main() -> int:
     passed = 0
     failures = []
@@ -338,10 +365,16 @@ def main() -> int:
     for msg in runner_fails:
         failures.append((f"runner: {msg}", "-", "-"))
 
-    total = len(CASES) + len(TOOL_CASES) + len(WRITE_CASES) + runner_total
+    perf_fails = perf_cases()
+    perf_total = 5
+    passed += (perf_total - len(perf_fails))
+    for msg in perf_fails:
+        failures.append((f"perf: {msg}", "-", "-"))
+
+    total = len(CASES) + len(TOOL_CASES) + len(WRITE_CASES) + runner_total + perf_total
     print(f"Conductor guardrails battery: {passed}/{total} cases as expected "
           f"({len(CASES)} Bash + {len(TOOL_CASES)} MCP-tool + {len(WRITE_CASES)} "
-          f"Write/Edit + {runner_total} wrapped-runner).")
+          f"Write/Edit + {runner_total} wrapped-runner + {perf_total} perf/ReDoS).")
     if failures:
         print("\nUnexpected results:")
         for case, expected, got in failures:

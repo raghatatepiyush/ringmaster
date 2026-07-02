@@ -190,7 +190,12 @@ def _context_regex(env_tok: str, fu_tok: str, bare_words=None) -> re.Pattern:
     pats = [
         rf"{_ENV_VARS}\s*=\s*[\"']?[\w./\-]*{env_tok}[\w./\-]*",          # NODE_ENV=production
         rf"--?{_FLAGS}[=\s]+[\"']?[\w.:/\-]*{fu_tok}[\w.:/\-]*",          # --stage prod / --to my-prod
-        rf"[a-z][a-z0-9+.\-]*://[^\s\"']*{fu_tok}[^\s\"']*",             # https://api.prod.acme.com
+        # URL scheme + host containing a prod token. The scheme run is BOUNDED
+        # ({0,15}) and left-anchored by a lookbehind: without both, a long run
+        # of [a-z0-9+.-] with no '://' makes the engine retry a greedy match at
+        # every offset -> O(N^2) backtracking (a hook-timeout ReDoS). Real URL
+        # schemes are <=~8 chars, so 15 keeps every legitimate match.
+        rf"(?<![a-z0-9+.\-])[a-z][a-z0-9+.\-]{{0,15}}://[^\s\"']*{fu_tok}[^\s\"']*",  # https://api.prod.acme.com
     ]
     if bare_words:
         # bare deploy switch: --prod / --production / --live, but NOT --prod-preview
@@ -235,9 +240,14 @@ PROD_COMPOUND = re.compile(
 # shared pre-prod / staging -> ask.
 _KUBE_SEG = (
     r"(?<![A-Za-z])(?:kubectl|helm|oc)(?![A-Za-z])"  # a kube-family binary
-    r"[^|&;\n]*?"                                     # its args, not crossing a separator
+    r"[^|&;\n]{0,256}?"                               # its args, not crossing a separator
     r"(?<![A-Za-z])-n[=\s]+[\"']?[\w./\-]*"           # a complete `-n <value>` namespace flag
 )
+# The {0,256} gap is BOUNDED, not open `*?`: an unbounded lazy run makes every
+# `oc`/`helm`/`kubectl` token in a separator-free segment launch a scan to the
+# segment end looking for a `-n` that isn't there -> O(N^2) across many tokens
+# (e.g. `oc oc oc ...`), a hook-timeout ReDoS that fails OPEN. 256 chars is ~2x
+# the longest realistic binary-to-`-n` gap, so no real kube command is missed.
 _KUBE_NS_PROD = re.compile(_KUBE_SEG + _PROD_FU_TOK + r"[\w./\-]*", re.IGNORECASE)
 _KUBE_NS_PREPROD = re.compile(_KUBE_SEG + _PREPROD_TOK + r"[\w./\-]*", re.IGNORECASE)
 
