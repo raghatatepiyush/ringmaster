@@ -161,4 +161,4 @@ By default the ledger is private (self-ignored). When the person asks to share p
 
 - **Always validate before trusting** a ledger you didn't just write: `python hooks/ledger.py validate .conductor/state.json`.
 - **Defensive reads never crash a session.** The SessionStart resume hint and any read path treat a missing or malformed ledger as simply "no ledger" — they never raise. If `state.json` is corrupt, say so and offer to rebuild it from `PROGRESS.md` rather than guessing.
-- **The ledger is Conductor's, not a control channel.** It records *your* plan and progress; it does not hand control to another tool. If a second orchestrator is present, the "one conductor leads" rule still applies (see `references/routing-and-plugins.md`).
+- **The ledger is Conductor's, not a control channel.** It records *your* plan and progress; it does not hand control to another tool.

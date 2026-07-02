@@ -311,15 +311,21 @@ def runner_cases():
 
 
 def perf_cases():
-    """ReDoS regression guard. The env-targeting regexes once had an unbounded,
-    unanchored URL-scheme alternative (`[a-z][a-z0-9+.-]*://...`) that backtracked
-    quadratically on a long token with no `://` - a 32 KB command took ~13 s and
-    blew past the 10 s hook timeout, which fails OPEN (the tool call proceeds
-    unguarded). Classification must stay ~linear, so a large input resolves well
-    inside the timeout. Returns failure msgs. See guardrails._context_regex."""
+    """ReDoS regression guard - a complexity tripwire, NOT a wall-clock SLA.
+
+    The env-targeting regexes once backtracked quadratically: the unbounded
+    URL-scheme alternative (`[a-z][a-z0-9+.-]*://...`) and the open lazy gap in
+    _KUBE_SEG both went O(N^2) on a long token, blowing past the 10 s hook
+    timeout - which fails OPEN (the tool call proceeds unguarded). After the fix
+    they are linear: the probes below classify in well under a second, ~0.5 s
+    even on a loaded CI runner. A *reintroduced* quadratic would take tens of
+    seconds on the same inputs (the old code was ~15 s at 58 KB). The budget is
+    set far above linear-on-slow-CI and far below any quadratic regression, so
+    it catches a regression without flaking on runner noise - do NOT tighten it
+    toward the observed linear time. See guardrails._context_regex / _KUBE_SEG."""
     import time
     fails = []
-    budget_s = 0.5  # 100 KB must classify in well under the 10 s hook timeout
+    budget_s = 5.0  # linear is ~0.5 s here even on slow CI; a quadratic regression is tens of s
     for probe in ("a" * 100000,                       # bare long token, no '://'
                   "kubectl -n " + "a" * 100000,       # trigger absent past a long run
                   "oc " * 30000):                     # repeated kube binary (_KUBE_SEG gap)
