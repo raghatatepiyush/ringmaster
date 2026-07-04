@@ -2,7 +2,7 @@
 
 All notable changes to Conductor. Versions follow [semver](https://semver.org/); the format follows [Keep a Changelog](https://keepachangelog.com/).
 
-## [Unreleased]
+## [2.3.0] — 2026-07-05
 
 **The ownership review** — the pass that turns *"the AI wrote it"* into *"I understand it and I take 100% responsibility for it."* This is the missing gate for the AI era: when Claude writes the code, the old road to understanding (writing it yourself) is gone, and a developer can ship a diff they've only skimmed.
 

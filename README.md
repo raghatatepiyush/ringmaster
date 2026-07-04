@@ -112,7 +112,7 @@ Conductor **directs** the official specialists rather than replacing them: insta
 ## Learn more
 
 - **[docs/hardening.md](docs/hardening.md)** — the threat model: what the hook catches, what it deliberately allows, and how CI proves it on every push.
-- **[CHANGELOG.md](CHANGELOG.md)** — version history. New in **v2.2.1**: valid orchestrator-skill frontmatter (v2.2.0 shipped it broken, which disabled auto-triggering), bundled-helper paths that resolve from an installed plugin, and CI now runs `claude plugin validate --strict` in both modes.
+- **[CHANGELOG.md](CHANGELOG.md)** — version history. New in **v2.3.0**: the ownership review — a bundled Ownership Review skill and Comprehension agent that make a developer genuinely understand AI-written code before sign-off, a conditional `gate.owned` flag in the Stop hook, and a 22-case Stop-gate test battery run across three OSes and Python 3.9 → 3.14.
 - **[skills/orchestrator/references/](skills/orchestrator/references/)** — the full doctrine: routing, playbooks, safety & environments, state & resume, team & delegation, right-sizing, model routing.
 
 ## License
