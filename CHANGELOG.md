@@ -2,6 +2,20 @@
 
 All notable changes to Conductor. Versions follow [semver](https://semver.org/); the format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [Unreleased]
+
+**The ownership review** — the pass that turns *"the AI wrote it"* into *"I understand it and I take 100% responsibility for it."* This is the missing gate for the AI era: when Claude writes the code, the old road to understanding (writing it yourself) is gone, and a developer can ship a diff they've only skimmed.
+
+### Added
+
+- **A bundled Ownership Review skill + Comprehension agent.** Where the Security Gate and `code-review` ask *is the code correct and safe?*, this new layer asks the harder question: *does the human about to own this change actually understand it?* The `comprehension` agent reads the **real diff**, risk-tiers it, and generates **grounded, answer-first questions** across five levels (architectural · code · functional · business · test); the `ownership-review` skill conducts the quiz in the main thread, teaches every miss in plain language anchored to `file:line`, and **calibrates the developer's stated confidence against how they actually did** — surfacing the *sure-and-wrong* blind spots that cause 2am incidents. It reuses detection (never rebuilds it), is risk-tiered so a trivial change gets no quiz, and honors an **anti-hallucination contract** (it may only assert answers grounded in the diff/evidence — never a confidently-wrong "correct answer" about your own code). Output is an **auditable Ownership Sign-off Record** with a draft-and-paste (or Atlassian-MCP) evidence trail.
+- **The ownership sign-off got teeth — a conditional `gate.owned` in the Stop hook.** A seventh gate flag on a *different axis* from the six A-grade criteria (the human's understanding, not the code's quality). It is **conditional by design**: written only by the ownership review, it never traps trivial / test / docs work, and — composing with `waitingOnHuman` — it blocks finishing only on the one dishonest pattern of marking an *unowned* change done. The six universal A-grade criteria (`routing.AGRADE_CRITERIA`) are deliberately **unchanged**, so no existing task, lane, or test is affected.
+- **`hooks/test_stop_gate.py` — a 22-case battery for the Stop gate**, now run in CI across three OSes and Python 3.9 → 3.14. `stop_gate.py` was refactored to expose a pure, IO-free decision function (`evaluate`), so both axes and every conservative escape hatch (`stop_hook_active`, `waitingOnHuman`, absent gate, non-`in_progress` tasks) are directly unit-tested; the inline CI Stop-gate smoke now also drives the ownership axis end to end over stdin.
+
+### Changed
+
+- The orchestrator's **stage-3 gate** now includes an **ownership sign-off** step for any change a human must own. `references/routing-and-plugins.md` now lists **three** always-present bundled specialists (Test Architect · Security Gate · **Ownership Review**); `references/state-and-resume.md` documents the conditional `gate.owned` semantics; the README gains the ownership-review capability and the updated pipeline line.
+
 ## [2.2.1] — 2026-07-03
 
 The submission-readiness release: one real defect fixed, then polish for the community-marketplace review pipeline.

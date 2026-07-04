@@ -65,6 +65,9 @@ jobs:
       - name: Run the routing battery
         run: python hooks/test_routing.py
 
+      - name: Run the stop-gate battery
+        run: python hooks/test_stop_gate.py
+
       - name: Smoke-test the ledger CLI (validate / next / board / gate)
         shell: python
         run: |
@@ -130,13 +133,23 @@ jobs:
               out = proc.stdout.strip()
               return json.loads(out)["decision"] if out else "allow"
 
+          full = {"correct": True, "secure": True, "clean": True,
+                  "complete": True, "documented": True, "explained": True}
           failing = run({"schemaVersion": 2, "tasks": [
               {"id": "T1", "status": "in_progress", "gate": {"secure": False}}]})
           clean = run({"schemaVersion": 2, "tasks": [
               {"id": "T1", "status": "in_progress"}]})  # no gate recorded -> must not trap
+          # ownership sign-off (conditional 7th criterion): an explicit owned:false
+          # blocks; a full A-grade gate with no `owned` key must NOT be trapped by it.
+          unowned = run({"schemaVersion": 2, "tasks": [
+              {"id": "T1", "status": "in_progress", "gate": dict(full, owned=False)}]})
+          owned_ok = run({"schemaVersion": 2, "tasks": [
+              {"id": "T1", "status": "in_progress", "gate": dict(full, owned=True)}]})
           assert failing == "block", ("expected block on failing gate", failing)
           assert clean == "allow", ("expected allow when no gate recorded", clean)
-          print("stop gate smoke: blocks recorded-failing gate, never traps an absent one")
+          assert unowned == "block", ("expected block on owned:false sign-off", unowned)
+          assert owned_ok == "allow", ("expected allow when owned:true + A-grade", owned_ok)
+          print("stop gate smoke: blocks failing gate + unsigned ownership, never traps an absent one")
 
       - name: Smoke-test the hook over stdin (deny / ask / allow)
         shell: python

@@ -65,6 +65,7 @@ A caveat worth knowing: stdio MCP servers launched via `npx @pkg@latest` can be 
 | **Security review before staging** | **Security Gate** *(bundled agent — always here)* | Dispatch the `security-gate` subagent on the diff | — bundled with Conductor | — (never absent) |
 | **Extra security hardening / scanning** | `security-guidance` *(plugin)* — or `semgrep` / `aikido` | `security-guidance` runs as a `PreToolUse` hook (9 patterns); Semgrep scans in real time | `/plugin install security-guidance@claude-plugins-official` | The bundled Security Gate already covers this; these stack on top |
 | **Code review of a change** | `code-review` *(plugin)* | `/code-review` — parallel audit agents, confidence-scored | `/plugin install code-review@claude-plugins-official` | Bundled two-stage pass (matches-spec, then quality) — `output-style.md` |
+| **Owning an AI-written change — comprehension + auditable sign-off** | **Ownership Review** *(bundled skill — always here)* | The `ownership-review` skill; it drives the `comprehension` agent | — bundled with Conductor | — (never absent) |
 | **Deeper PR review (tests, types, simplification)** | `pr-review-toolkit` *(plugin)* — 6 specialized agents | Its review agents | `/plugin install pr-review-toolkit@claude-plugins-official` | Fold into the bundled review pass |
 | **Tidy / simplify recently-changed code** | `code-simplifier` *(plugin)* | Its clarity agent | `/plugin install code-simplifier@claude-plugins-official` | Apply the simplification yourself, preserving behavior (keep tests green) |
 | **Keeping CLAUDE.md / project docs current** | `claude-md-management` *(plugin)* | Its CLAUDE.md audit skill | `/plugin install claude-md-management@claude-plugins-official` | Edit `CLAUDE.md` and docs directly — capture changed behavior, structure, conventions |
@@ -89,7 +90,7 @@ A caveat worth knowing: stdio MCP servers launched via `npx @pkg@latest` can be 
 
 **frontend-design.** Auto-invokes on UI work — describing the task is usually enough. Its whole point is *distinctive, production-grade* design that avoids generic AI aesthetics: a chosen aesthetic direction, characterful typography (it explicitly steers away from Inter/Roboto defaults), high-impact motion, gradient meshes / noise / grain for atmosphere. If you fall back to building UI yourself, hold that same bar — don't ship default-looking markup.
 
-**code-review.** `/code-review` runs a multi-agent pipeline with **confidence scoring 0–100, reporting only issues ≥80** to cut false positives, integrates the GitHub CLI (`gh`) and MCP tools, and uses a high-tier model (Opus) for final validation of bugs/logic. Route here *after* the Security Gate clears the diff — security first (it can block), then quality review.
+**code-review.** `/code-review` runs a multi-agent pipeline with **confidence scoring 0–100, reporting only issues ≥80** to cut false positives, integrates the GitHub CLI (`gh`) and MCP tools, and uses a high-tier model (Opus) for final validation of bugs/logic. Route here *after* the Security Gate clears the diff — security first (it can block), then quality review — and *before* the ownership review's sign-off: detection finds the defects, then the ownership review makes sure the human actually understands the change they're about to own.
 
 **feature-dev.** A **7-phase** workflow orchestrating three agents — `code-explorer` (understands the codebase), `code-architect` (designs the change), `code-reviewer` (quality gate) — and it also does CLAUDE.md audits and session-learning capture. A strong alternative to the superpowers loop for larger features.
 
@@ -113,11 +114,12 @@ A caveat worth knowing: stdio MCP servers launched via `npx @pkg@latest` can be 
 
 ---
 
-## The two always-present specialists
+## The three always-present specialists
 
 These ship inside Conductor — available on every project with zero install, the backbone the rails lean on:
 
 - **Test Architect** (`skills/test-architect/`) — all test craft: risk-based design, red→green TDD, behavior-not-implementation assertions, determinism, pruning stale tests, pretty final report. Route *every* test step here.
 - **Security Gate** (`agents/security-gate.md`) — a fresh-context adversarial reviewer dispatched on the working diff before staging. Hunts secrets, injection, broken authz, crypto misuse, dependency risk; **blocks on critical**; reports defects but never fixes them; never commits.
+- **Ownership Review** (`skills/ownership-review/`, driving `agents/comprehension.md`) — where the two above ask "is the code correct and safe?", this asks "does the human about to take 100% responsibility actually understand it?" It reconstructs understanding through an **answer-first** comprehension quiz grounded in the real diff, teaches every hole in plain language, calibrates the developer's confidence against how they truly did, and records an **auditable ownership sign-off** (`gate.owned`) the Stop hook enforces. Route to it in stage 3 for any change someone must own; it reuses (never rebuilds) the detection above.
 
 Everything else is an optional upgrade. Conductor is complete and safe with zero external plugins installed — those just make individual capabilities sharper.

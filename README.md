@@ -40,6 +40,7 @@ Conductor auto-triggers: it frames the task, shows a short plan, waits for your 
 | 🧭 **Routing with fallbacks** | dispatches the best specialist plugin for each step (`frontend-design`, `code-review`, `playwright`, `supabase`, `stripe`, `vercel`, `github`, `context7`, `superpowers`, …) and falls back to a competent built-in when one isn't installed — work never blocks |
 | 🧪 **A bundled Test Architect** | risk-based, red→green TDD, behavior-not-implementation assertions, stale-test pruning |
 | 🔒 **A bundled Security Gate** | a fresh-context adversarial reviewer that hunts secrets, injection, broken authz, crypto misuse — and **blocks hand-off** on critical findings |
+| ✍️ **An ownership review** | turns *"the AI wrote it"* into *"I understand it and I own it"* — a comprehension quiz grounded in your **actual diff**, answer-first, that teaches every hole in plain language, tells you where you were **confidently wrong** (the blind spots that cause 2am incidents), and records an **auditable sign-off** a `Stop` hook enforces. So "I take 100% responsibility" is backed by evidence, not a vibe |
 | 🗂️ **A resumable team board** | the `.conductor/` ledger tracks pending · in-progress · done · blocked with an owner and dependencies per task; any fresh session (or teammate) picks up exactly where the last one stopped |
 | 👥 **Real delegation** | principal → engineer → junior subagents with complete context hand-offs, behind a six-criterion A-grade quality gate that a `Stop` hook actually enforces |
 | 🎚️ **Token discipline** | every task is right-sized to the cheapest model/effort that still holds the bar; work that fails the gate auto-escalates back to the premium model — quality is model-independent |
@@ -63,7 +64,7 @@ The hook is **allow-by-default** — normal dev (`npm test`, `git status`, `git 
 
 ## How it works
 
-**Frame & classify → plan (🛑 halt for your "go") → route & build → tests → 🔒 Security Gate → review → docs → 📦 stage & report.**
+**Frame & classify → plan (🛑 halt for your "go") → route & build → tests → 🔒 Security Gate → review → ✍️ ownership sign-off → docs → 📦 stage & report.**
 
 `SKILL.md` is a lean router; the depth lives in reference files loaded only when their moment comes (progressive disclosure), so the system stays token-light on every run.
 
@@ -78,15 +79,18 @@ conductor/
 ├── hooks/
 │   ├── hooks.json             # registers the gates: Bash + Write/Edit + all-MCP + Stop
 │   ├── guardrails.py          # PreToolUse policy (deny/ask); resolves wrapped runners
-│   ├── stop_gate.py           # Stop hook: the A-grade gate's teeth
+│   ├── stop_gate.py           # Stop hook: the A-grade gate + ownership sign-off teeth
 │   ├── session_doctrine.py    # SessionStart banner + stack hint + resume hint
 │   ├── ledger.py              # board / next-task / gate / share helpers + CLI
 │   ├── routing.py             # Task-Profile + A-grade-gate helpers
-│   └── test_*.py              # the batteries (guardrails 191 · ledger 27 · routing)
+│   └── test_*.py              # the batteries (guardrails 191 · ledger 27 · routing · stop-gate 22)
 ├── skills/
 │   ├── orchestrator/          # the conductor skill (thin router + references/)
+│   ├── ownership-review/      # bundled ownership review (comprehension quiz + auditable sign-off)
 │   └── test-architect/        # bundled Test Architect skill
-├── agents/security-gate.md    # bundled adversarial security reviewer
+├── agents/
+│   ├── security-gate.md       # bundled adversarial security reviewer
+│   └── comprehension.md       # bundled comprehension examiner (the ownership review's brain)
 ├── docs/hardening.md          # threat model + CI proof
 └── .conductor/                # (runtime, per-project) the ledger — self-ignored
 ```
