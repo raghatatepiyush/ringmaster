@@ -1,6 +1,7 @@
 # 🎪 Ringmaster
 
 [![CI](https://github.com/raghatatepiyush/ringmaster/actions/workflows/ci.yml/badge.svg)](https://github.com/raghatatepiyush/ringmaster/actions/workflows/ci.yml)
+[![Listed on ClaudePluginHub](https://www.claudepluginhub.com/badge/raghatatepiyush-ringmaster)](https://www.claudepluginhub.com/plugins/raghatatepiyush-ringmaster?ref=badge)
 
 **Turn Claude Code into a disciplined senior engineering team.** Describe a task in plain English — build a screen, add a feature, write tests, wire a database, fix a bug — and Ringmaster frames the real goal, shows you a short plan, waits for your **"go"**, routes each step to the best specialist plugin (or a built-in fallback), ships every change with tests through an adversarial Security Gate, and hands back staged, reviewed work — explained so a junior engineer with no project context could follow it.
 
