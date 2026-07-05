@@ -46,7 +46,7 @@ A sign-off is a claim about a *person's understanding at a moment*, not a certif
 - **A corrected miss stays in the record.** No retry-to-erase. "Solid" and "corrected then understood" are both honest; a silently-scrubbed miss is not.
 - **`⛔ NOT YET OWNED` is a legitimate, useful outcome.** If the developer disengaged, or a *critical* answer couldn't be grounded, the sign-off is not honest — say so and stop. `gate.owned` stays false; the Stop hook backs you (see the interaction contract in `SKILL.md`). Never upgrade the verdict to be agreeable.
 - **Never claim more than the evidence.** The comprehension grader may only assert answers grounded in the diff, the surrounding code, `context7`, or a test it ran (the anti-hallucination contract). The record inherits that: every "corrected" line traces to a real `file:line`. A sign-off built on a confidently-wrong "correct answer" is worse than none — it teaches the owner false things about their own code.
-- **Ownership is the human's, always.** This skill *evidences* a sign-off; it never *is* one. The developer signs. Conductor never commits, and never marks a change owned on the human's behalf to move things along.
+- **Ownership is the human's, always.** This skill *evidences* a sign-off; it never *is* one. The developer signs. Ringmaster never commits, and never marks a change owned on the human's behalf to move things along.
 
 ---
 
@@ -71,7 +71,7 @@ Corrected during review: <the miss(es), or "none">
 
 If the **Atlassian MCP** is live in the session (its `mcp__…` Jira/Confluence tools are present), offer to write the sign-off straight onto the ticket or page. Follow the MCP preflight rule (`skills/orchestrator/references/routing-and-plugins.md`): **check first, never assume, never stall silently.** Use the missing-MCP recommendation block from `output-style.md`:
 
-> 🔌 Conductor can attach this sign-off straight to the Jira ticket with the `atlassian` MCP, which isn't connected. I can:
+> 🔌 Ringmaster can attach this sign-off straight to the Jira ticket with the `atlassian` MCP, which isn't connected. I can:
 >  (a) wait while you add it, then write it to the ticket; or
 >  (b) give you the paste-ready block now (above) — you drop it into Jira/Confluence yourself.
 > Which do you want?

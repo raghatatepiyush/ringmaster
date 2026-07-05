@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Conductor — battery for the ledger helpers (stdlib only)."""
+"""Ringmaster — battery for the ledger helpers (stdlib only)."""
 import os
 import sys
 
@@ -115,7 +115,7 @@ def run():
 
     extra = 3 + 3 + 1  # gate_status(3) + board needles(grouped as 3) + empty(1)
     total = len(VALIDATE_CASES) + len(NEXT_CASES) + 2 + extra
-    print(f"Conductor ledger battery: {total - len(failures)}/{total} cases as expected.")
+    print(f"Ringmaster ledger battery: {total - len(failures)}/{total} cases as expected.")
     if failures:
         print("\nUnexpected results:")
         for f in failures:

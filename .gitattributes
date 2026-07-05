@@ -1,4 +1,4 @@
-# Conductor is cross-platform and its hooks launch through a POSIX `sh` shim,
+# Ringmaster is cross-platform and its hooks launch through a POSIX `sh` shim,
 # so every text file is normalized to LF in the repo — identical behavior on
 # macOS, Linux, WSL, and Windows (Git-Bash). Prevents CRLF from sneaking into
 # the shell launcher or Python hooks on Windows checkouts.

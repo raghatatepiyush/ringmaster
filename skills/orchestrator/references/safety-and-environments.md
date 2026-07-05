@@ -1,6 +1,6 @@
 # Safety & Environments — the rails, in depth
 
-The conductor's first duty is to do no harm to the team's code, history, or live systems. This file is the depth behind the four rails in `SKILL.md`: how to tell which environment you're aimed at, the git/hand-off discipline, why two of the rails are enforced in *code* (and what that means for you), and exactly what to say when someone bumps into a boundary. Read it whenever environments or git/hand-off are in play.
+The ringmaster's first duty is to do no harm to the team's code, history, or live systems. This file is the depth behind the four rails in `SKILL.md`: how to tell which environment you're aimed at, the git/hand-off discipline, why two of the rails are enforced in *code* (and what that means for you), and exactly what to say when someone bumps into a boundary. Read it whenever environments or git/hand-off are in play.
 
 ---
 
@@ -54,7 +54,7 @@ The rails don't stop you from working against shared environments when that's th
 
 ## Git & hand-off discipline
 
-The conductor **prepares** changes; the human **owns** them. That separation is a rail.
+The ringmaster **prepares** changes; the human **owns** them. That separation is a rail.
 
 **What you do:**
 - Stage **only the specific paths you touched**: `git add path/to/file path/to/other`. Never `git add .` or `git add -A` — a blanket add sweeps in unrelated work, secrets, or scratch files the person never meant to stage.
@@ -68,12 +68,12 @@ The conductor **prepares** changes; the human **owns** them. That separation is 
 - Package/release publishing — `npm`/`pnpm version <bump>`, `npm`/`yarn`/`pnpm`/`bun publish`, `cargo publish`, `twine upload`, `gem push`, `release-it` / `standard-version` / `semantic-release`, and the like — shipping an artifact is the human's decision (a `--dry-run` is allowed).
 
 **What you never do *autonomously*, but may do on the human's explicit confirm (hook `ask`):**
-- **Open or merge a pull request** — `gh pr create|merge`, `glab mr create|merge`, or the GitHub-MCP `create_pull_request` / `merge_pull_request` / `push_files` / file writes. Conductor never opens or merges a PR as a step in its own plan; when the human says "open the PR", the hook prompts and it proceeds on their approval.
+- **Open or merge a pull request** — `gh pr create|merge`, `glab mr create|merge`, or the GitHub-MCP `create_pull_request` / `merge_pull_request` / `push_files` / file writes. Ringmaster never opens or merges a PR as a step in its own plan; when the human says "open the PR", the hook prompts and it proceeds on their approval.
 - **A preview / dev deploy** — `vercel deploy` (no prod target), or the Vercel-MCP deploy tool aimed at preview/dev. Same rule: never on a guess, proceeds on the human's confirm. A **production** deploy stays a hard deny — the human runs prod themselves.
 
-**Why this split:** committing, pushing, and releasing carry accountability and history the model can't own, so they stay the human's, done by hand. Opening a PR or shipping a throwaway preview is reversible and routine, so Conductor *can* perform it — but only when the human explicitly asks, never on a guess. The hook turns "never on a guess" into a literal wall rather than a hope, while still letting the human delegate the click when they mean to.
+**Why this split:** committing, pushing, and releasing carry accountability and history the model can't own, so they stay the human's, done by hand. Opening a PR or shipping a throwaway preview is reversible and routine, so Ringmaster *can* perform it — but only when the human explicitly asks, never on a guess. The hook turns "never on a guess" into a literal wall rather than a hope, while still letting the human delegate the click when they mean to.
 
-**MCP tools and the Bash hook (a gap, and how it's closed).** The guardrails hook reads *Bash* commands — it cannot see an MCP tool call, because that isn't Bash. Left alone, that's a real hole: the GitHub MCP can open a PR, the Vercel MCP can deploy, a Supabase/DB MCP can mutate prod, and a Stripe MCP can charge a live card — all without any Bash ever running. Conductor closes it two ways:
+**MCP tools and the Bash hook (a gap, and how it's closed).** The guardrails hook reads *Bash* commands — it cannot see an MCP tool call, because that isn't Bash. Left alone, that's a real hole: the GitHub MCP can open a PR, the Vercel MCP can deploy, a Supabase/DB MCP can mutate prod, and a Stripe MCP can charge a live card — all without any Bash ever running. Ringmaster closes it two ways:
 
 1. **A second hook matcher routes *every* MCP call through the same policy.** The matcher is `mcp__.*` in `hooks/hooks.json` (not just github/vercel) — so `classify_tool` runs on **all** `mcp__*` tools. It enforces, deterministically:
    - **Ship-gates** (same as Bash): a GitHub PR-write/`push_files` → **ask**; a Vercel deploy → **deny** if prod, **ask** if preview.

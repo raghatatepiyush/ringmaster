@@ -133,7 +133,7 @@ Lightweight: skip design and most of the gate. Update CLAUDE.md / project docs t
 
 **Triggers:** "ship a preview", "deploy this to a preview URL", "put it on Vercel so I can see it", "sync the env vars".
 
-1. **Frame & confirm the tier.** Confirm what's being deployed and that the target is **preview / dev**. 🚦 a production deploy is never Conductor's to run — if they want prod, that's their command, by their own hand.
+1. **Frame & confirm the tier.** Confirm what's being deployed and that the target is **preview / dev**. 🚦 a production deploy is never Ringmaster's to run — if they want prod, that's their command, by their own hand.
 2. **Don't deploy a broken build.** Confirm the build/type-check is green locally first; detect the platform (Vercel? the project's own tooling?).
 3. **Route to `vercel`** — `/vercel:env` to sync env vars if needed, then `/vercel:deploy` (preview). 🚦 the deploy **pauses for your explicit confirm** (it's a ship action) and proceeds on approval. Fallback: the project's deploy tooling, preview only.
 4. **Verify** the preview URL responds; optionally hand it to `playwright` / `chrome-devtools` for a quick smoke or perf check.

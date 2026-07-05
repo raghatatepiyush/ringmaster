@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Conductor — battery for the routing/profile helpers (stdlib only)."""
+"""Ringmaster — battery for the routing/profile helpers (stdlib only)."""
 import os
 import sys
 
@@ -55,7 +55,7 @@ def run():
     if not should_escalate({}):  # missing criteria are fail-closed
         failures.append("should_escalate False on missing criteria (must fail closed)")
 
-    print(f"Conductor routing battery: {'OK' if not failures else 'FAIL'} "
+    print(f"Ringmaster routing battery: {'OK' if not failures else 'FAIL'} "
           f"({len(AGRADE_CRITERIA)} A-grade criteria).")
     if failures:
         print("\nUnexpected results:")

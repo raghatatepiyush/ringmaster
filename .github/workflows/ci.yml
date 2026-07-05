@@ -1,8 +1,8 @@
 name: CI
 
-# Conductor's safety rails are only worth as much as their proof. This workflow
+# Ringmaster's safety rails are only worth as much as their proof. This workflow
 # runs the adversarial guardrails battery on every push and PR, across the three
-# OSes Conductor claims to support (Linux, Windows, macOS) and a span of Python
+# OSes Ringmaster claims to support (Linux, Windows, macOS) and a span of Python
 # versions — so the "hard, hook-enforced, cross-platform" promise in the README
 # is continuously *verified*, not just asserted. The hooks are standard-library
 # only, so there is nothing to install.
@@ -71,7 +71,7 @@ jobs:
       - name: Smoke-test the ledger CLI (validate / next / board / gate)
         shell: python
         run: |
-          # Prove the ledger CLI works end to end on every OS (it backs /conductor:pickup and the board).
+          # Prove the ledger CLI works end to end on every OS (it backs /ringmaster:pickup and the board).
           import json, os, subprocess, sys, tempfile
 
           full_gate = {"correct": True, "secure": True, "clean": True,
@@ -119,11 +119,11 @@ jobs:
           import json, os, subprocess, sys, tempfile
 
           d = tempfile.mkdtemp()
-          os.makedirs(os.path.join(d, ".conductor"), exist_ok=True)
+          os.makedirs(os.path.join(d, ".ringmaster"), exist_ok=True)
           hook = os.path.abspath("hooks/stop_gate.py")
 
           def run(state):
-              with open(os.path.join(d, ".conductor", "state.json"), "w", encoding="utf-8") as fh:
+              with open(os.path.join(d, ".ringmaster", "state.json"), "w", encoding="utf-8") as fh:
                   json.dump(state, fh)
               proc = subprocess.run([sys.executable, hook],
                                     input='{"stop_hook_active": false}',
@@ -261,7 +261,7 @@ jobs:
       - name: Validate as a plugin (what the review pipeline sees)
         run: |
           set -eu
-          dst="$(mktemp -d)/conductor"
+          dst="$(mktemp -d)/ringmaster"
           mkdir -p "$dst"
           cp -r . "$dst"
           rm -rf "$dst/.git"

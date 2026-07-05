@@ -1,6 +1,6 @@
 # Output Style — the house style
 
-This is the single source of truth for everything Conductor *prints*. The whole system should read like one product, so these blocks deliberately match the Test Architect's visual language (emoji signposts, compact tables, a "🗣️ In plain terms" summary). Read this before printing any scope block or report, and reuse these structures verbatim — consistency is what makes the output feel trustworthy and scannable.
+This is the single source of truth for everything Ringmaster *prints*. The whole system should read like one product, so these blocks deliberately match the Test Architect's visual language (emoji signposts, compact tables, a "🗣️ In plain terms" summary). Read this before printing any scope block or report, and reuse these structures verbatim — consistency is what makes the output feel trustworthy and scannable.
 
 Two standards sit above the templates:
 
@@ -13,7 +13,7 @@ Two standards sit above the templates:
 
 | Emoji | Means |
 | :-- | :-- |
-| 🎼 | Conductor / orchestration-level message |
+| 🎪 | Ringmaster / orchestration-level message |
 | 📋 | A report or summary block |
 | 🗣️ | The "in plain terms" plain-language summary |
 | 🛑 | A hard stop / approval gate / blocking failure |
@@ -40,7 +40,7 @@ Don't invent new emoji per run; this set covers the cases. Use them sparingly �
 Before building anything substantial, print this and **HALT for "go"**:
 
 ```
-🎼 Conductor — Plan & Scope
+🎪 Ringmaster — Plan & Scope
 
 | Field            | Detail                                                        |
 | :--------------- | :------------------------------------------------------------ |
@@ -59,10 +59,10 @@ Keep the plan steps genuinely short. If the work is large, this is also where yo
 
 ## The resume briefing (print on pickup)
 
-When resuming from the `.conductor/` ledger (see `references/state-and-resume.md`), print this before continuing — so the person sees exactly where things stand and what comes next:
+When resuming from the `.ringmaster/` ledger (see `references/state-and-resume.md`), print this before continuing — so the person sees exactly where things stand and what comes next:
 
 ```
-🎼 Conductor — Resume
+🎪 Ringmaster — Resume
 
 | Field      | Detail                                                              |
 | :--------- | :----------------------------------------------------------------- |
@@ -82,7 +82,7 @@ When resuming from the `.conductor/` ledger (see `references/state-and-resume.md
 Mirror the Test Architect's report shape so the two feel identical:
 
 ```
-### 📋 Conductor — Final Report
+### 📋 Ringmaster — Final Report
 
 | Metric        | Status / Details                                                      |
 | :------------ | :-------------------------------------------------------------------- |
@@ -142,10 +142,10 @@ Verdict: ✅ Clean  /  ⚠️ Notes (listed above)  /  🛑 Needs changes before
 
 ## The compaction nudge (print only at a safe checkpoint)
 
-After checkpointing the ledger at a clean boundary (a task staged, a phase done, context getting heavy), you MAY suggest compaction — **never** mid-task, never with unsaved decisions, and never by changing the person's settings. Conductor recommends; the person runs `/compact`:
+After checkpointing the ledger at a clean boundary (a task staged, a phase done, context getting heavy), you MAY suggest compaction — **never** mid-task, never with unsaved decisions, and never by changing the person's settings. Ringmaster recommends; the person runs `/compact`:
 
 ```
-✅ Ledger saved to `.conductor/`. Clean boundary — good moment to `/compact` if context is heavy; nothing is lost. After compacting, say "pickup" and I'll continue from <task id>.
+✅ Ledger saved to `.ringmaster/`. Clean boundary — good moment to `/compact` if context is heavy; nothing is lost. After compacting, say "pickup" and I'll continue from <task id>.
 ```
 
 ---
@@ -155,7 +155,7 @@ After checkpointing the ledger at a clean boundary (a task staged, a phase done,
 When a step would be **materially better** with an MCP specialist that isn't installed (see `references/routing-and-plugins.md`), recommend it as a real choice — never stall silently, never downgrade silently:
 
 ```
-🔌 Conductor can do this materially better with the `<name>` MCP, which isn't installed. I can:
+🔌 Ringmaster can do this materially better with the `<name>` MCP, which isn't installed. I can:
   (a) wait while you add it — `<one-line install>` (may need `<credential/config>`), then use it; or
   (b) proceed now with `<fallback>` — you'd lose `<specific capability>`.
 Which do you want?
@@ -182,7 +182,7 @@ Never report DONE when it isn't. A truthful BLOCKED or DONE WITH CONCERNS is mor
 
 ## The plain-language standard (the "🗣️" test)
 
-The "In plain terms" line is where Conductor earns its keep as a teacher. Hold it to this bar:
+The "In plain terms" line is where Ringmaster earns its keep as a teacher. Hold it to this bar:
 
 - **Audience:** a sharp, eager junior who just joined and knows nothing about this codebase.
 - **No jargon unspent:** if you must use a term, define it in the same breath, or pick a plainer word.

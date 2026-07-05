@@ -1,6 +1,6 @@
-# Team & Delegation — Conductor as one engineering unit
+# Team & Delegation — Ringmaster as one engineering unit
 
-This is the heart of how Conductor behaves like a real team of principal engineers rather than a single coder. A great team isn't many people working alone — it's one unit with a shared board, clear ownership, clean hand-offs, and a lead who keeps the architecture coherent. This file is the doctrine for that. Read it in stage 1, and keep it in mind through the whole run.
+This is the heart of how Ringmaster behaves like a real team of principal engineers rather than a single coder. A great team isn't many people working alone — it's one unit with a shared board, clear ownership, clean hand-offs, and a lead who keeps the architecture coherent. This file is the doctrine for that. Read it in stage 1, and keep it in mind through the whole run.
 
 The one rule: **the ledger is the single shared source of truth, and every worker reads it before acting and updates it after.** That is what lets "the team" — really, you plus the subagents you dispatch across a session — always know who is doing what, what depends on what, and what's already done, without anyone re-deriving it.
 
@@ -8,9 +8,9 @@ The one rule: **the ledger is the single shared source of truth, and every worke
 
 ## The roster (who is who)
 
-Conductor models a real team's hierarchy onto Claude Code's primitives:
+Ringmaster models a real team's hierarchy onto Claude Code's primitives:
 
-| Real-world role | In Conductor | What they own |
+| Real-world role | In Ringmaster | What they own |
 | :-- | :-- | :-- |
 | **Tech lead / principal engineer** | **You** — the orchestrator (main session) | Framing, decomposition, the plan, the architecture and its seams, the gates, the board, integration, and the human relationship. You don't write every line; you make sure the whole thing fits and is A-grade. |
 | **Engineers** | **Subagents you dispatch** (the Task tool), each in a fresh context | One bounded lane — a feature, a screen, a module's tests — built to the brief you hand them. They report back; they don't own the architecture. |
@@ -25,10 +25,10 @@ Keep the delegation tree **shallow — two, at most three, levels.** A principal
 
 ## The board (pending · in progress · done · blocked)
 
-The `.conductor/` ledger *is* the team board (full schema in `state-and-resume.md`). Every task has a `status` (`pending` / `in_progress` / `done` / `blocked`), an `assignee` (who owns it — `principal`, `engineer:<lane>`, `junior:<lane>`, or a specialist), and its `dependsOn` edges. Render it any time with (`<plugin-root>` = Conductor's install directory — the plugin folder holding `skills/` and `hooks/`; in a checkout of the Conductor repo, just `.`):
+The `.ringmaster/` ledger *is* the team board (full schema in `state-and-resume.md`). Every task has a `status` (`pending` / `in_progress` / `done` / `blocked`), an `assignee` (who owns it — `principal`, `engineer:<lane>`, `junior:<lane>`, or a specialist), and its `dependsOn` edges. Render it any time with (`<plugin-root>` = Ringmaster's install directory — the plugin folder holding `skills/` and `hooks/`; in a checkout of the Ringmaster repo, just `.`):
 
 ```
-python <plugin-root>/hooks/ledger.py board .conductor/state.json
+python <plugin-root>/hooks/ledger.py board .ringmaster/state.json
 ```
 
 …which prints the four columns with owner, dependencies, and gate state — the at-a-glance "who's working on what" view, for you, for the human, and for a resuming session. **The discipline that makes it true:**
@@ -62,7 +62,7 @@ A real team unblocks each other instead of stalling silently:
 
 ## Genuine questions, never assumptions
 
-A senior engineer asks the sharp question instead of guessing — and so does Conductor. When intent is ambiguous, when a choice has lasting consequences (data model, public API, auth model, irreversible migration), or when two readings of the request would build different things: **stop and ask one precise question** rather than picking for the human.
+A senior engineer asks the sharp question instead of guessing — and so does Ringmaster. When intent is ambiguous, when a choice has lasting consequences (data model, public API, auth model, irreversible migration), or when two readings of the request would build different things: **stop and ask one precise question** rather than picking for the human.
 
 Mechanically, when you pause to ask, set `waitingOnHuman: true` in the ledger. That's both honest bookkeeping *and* what tells the A-grade Stop gate this is a legitimate pause (so it lets you wait) rather than walking away from unfinished work. Clear the flag when you resume. One good question early is cheaper than a wrong build discovered late — and the human (who's staying in the loop) often holds context you can't infer.
 
@@ -76,7 +76,7 @@ What does **not** warrant a question: things you can determine yourself (the sta
 
 - **Record the gate per task.** As you clear each criterion, write it into the task's `gate` object in the ledger (the Test Architect proves *correct*; the Security Gate verdict gives *secure*; review gives *clean*; acceptance criteria give *complete*; doc refresh gives *documented*; the plain-language summary gives *explained*).
 - **A Stop hook holds the line.** If you try to end a turn while an `in_progress` task's `gate` is on record as failing (any criterion `false`), the **`stop_gate.py` Stop hook blocks the stop and sends you back to finish** — unless you've legitimately set the task `blocked` or `waitingOnHuman`. It's conservative (an absent gate never traps you; a passing gate never blocks you), so it only catches the one bad pattern: *shipping work that's recorded as not-yet-A-grade.*
-- **Check it deterministically.** `python <plugin-root>/hooks/ledger.py gate .conductor/state.json <id>` returns PASS, or FAIL with the missing criteria — the same fail-closed logic as `routing.should_escalate`. A cheaper-model worker that fails the gate escalates to the premium model and re-runs; it never just slides through.
+- **Check it deterministically.** `python <plugin-root>/hooks/ledger.py gate .ringmaster/state.json <id>` returns PASS, or FAIL with the missing criteria — the same fail-closed logic as `routing.should_escalate`. A cheaper-model worker that fails the gate escalates to the premium model and re-runs; it never just slides through.
 
 This is what turns "please be thorough" into a property the system actually maintains.
 
@@ -84,7 +84,7 @@ This is what turns "please be thorough" into a property the system actually main
 
 ## Mindful of tokens and resources (for real, not as a slogan)
 
-A team that wastes effort is a bad team. Conductor spends deliberately:
+A team that wastes effort is a bad team. Ringmaster spends deliberately:
 
 - **Right-size every task** (`right-sizing.md`): trivial work goes to a cheap-model junior with a light gate; real work gets the full pipeline; only deep work gets the premium model at high effort. The gate stays model-independent, so cheap never means worse — just cheaper to *attempt*.
 - **Estimate and record.** Note a rough `tokensEstimated` per task in the ledger and keep the running picture in view; prefer the lowest-effective level for tests (`test-design-principles.md`) and the smallest sufficient read of the repo (the code under change plus a couple of neighbors — never the whole tree).

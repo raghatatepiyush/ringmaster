@@ -1,6 +1,15 @@
 # Changelog
 
-All notable changes to Conductor. Versions follow [semver](https://semver.org/); the format follows [Keep a Changelog](https://keepachangelog.com/).
+All notable changes to Ringmaster. Versions follow [semver](https://semver.org/); the format follows [Keep a Changelog](https://keepachangelog.com/).
+
+## [2.4.0] — 2026-07-05
+
+**The rename to Ringmaster.** The plugin's marketplace `name` collided with an existing community plugin of the same former name, so submissions showed *Published* but never synced into `marketplace.json`. Renaming to the unique, on-theme **`ringmaster`** — the one who runs the whole show and cues each act — resolves the collision: same tool, same rails, new name, verified clear in the community marketplace.
+
+### Changed
+
+- **The plugin identity is now `ringmaster`.** `.claude-plugin/plugin.json` and `marketplace.json` use `name: ringmaster` / `displayName: Ringmaster`; every command, skill, and agent is now namespaced `ringmaster:*` (e.g. `/ringmaster:orchestrator`, `/ringmaster:pickup`, the bundled `ringmaster:security-gate` and `ringmaster:comprehension` agents); the per-project working ledger lives in `.ringmaster/`; `homepage`/`repository` point at `raghatatepiyush/ringmaster`. The voice moves with the name — the old orchestra metaphor becomes the circus *ringmaster* who directs the acts and keeps the show on cue.
+- **No behavioral change.** A token-scoped rename touched only identifiers, paths, brand text, and metaphor prose. Every safety rail is behavior-identical: the guardrails, ledger, routing, and stop-gate batteries all pass, and `claude plugin validate --strict` passes in both marketplace and plugin modes.
 
 ## [2.3.0] — 2026-07-05
 
@@ -23,7 +32,7 @@ The submission-readiness release: one real defect fixed, then polish for the com
 ### Fixed
 
 - **The orchestrator skill's YAML frontmatter was invalid, so the skill loaded with no metadata.** The description contained an unquoted `rails: never …` — a colon followed by a space inside a plain YAML scalar, which YAML forbids — so the whole frontmatter failed to parse and Claude Code loaded the skill with every field silently dropped, disabling description-based auto-triggering (v2.2.0 shipped this). The description is now quoted; `claude plugin validate --strict` passes in both marketplace mode and plugin mode. The regression was invisible to repo-root validation (which only checks `marketplace.json`) and is now guarded in CI (below).
-- **Bundled-helper paths now resolve from an installed plugin.** `/conductor:pickup`, the orchestrator skill, and the reference docs invoked `python hooks/ledger.py …` relative to the repo root — correct in a checkout of this repo, wrong for an installed plugin (the helper lives under the plugin's install directory). Skill and command content now uses `${CLAUDE_PLUGIN_ROOT}` (substituted inline by Claude Code); the reference files, which are read raw, spell out how to locate `<plugin-root>` from their own path.
+- **Bundled-helper paths now resolve from an installed plugin.** `/ringmaster:pickup`, the orchestrator skill, and the reference docs invoked `python hooks/ledger.py …` relative to the repo root — correct in a checkout of this repo, wrong for an installed plugin (the helper lives under the plugin's install directory). Skill and command content now uses `${CLAUDE_PLUGIN_ROOT}` (substituted inline by Claude Code); the reference files, which are read raw, spell out how to locate `<plugin-root>` from their own path.
 
 ### Added
 
@@ -45,7 +54,7 @@ The "arms everywhere, installable by anyone" release.
 
 ### Added
 
-- **`.claude-plugin/marketplace.json`** — Conductor is now installable in two lines: `/plugin marketplace add raghatatepiyush/conductor`, then `/plugin install conductor@conductor`.
+- **`.claude-plugin/marketplace.json`** — Ringmaster is now installable in two lines: `/plugin marketplace add raghatatepiyush/ringmaster`, then `/plugin install ringmaster@ringmaster`.
 - **CI: launcher-shim smoke on all three OSes.** It extracts the *real* registered command from `hooks.json` (so the test can never drift from what ships) and drives it end-to-end — including a simulated Store-stub trap: fake failing `python3`/`python` executables placed ahead of a working `py` on PATH. The one component the Python batteries couldn't reach is now continuously verified.
 - `CHANGELOG.md` (this file) and `docs/hardening.md` — the version history and the threat model moved out of the README, which is now a front page people can actually read.
 
@@ -59,7 +68,7 @@ The "arms everywhere, installable by anyone" release.
 
 ### Added
 
-- **A shared team board.** The `.conductor/` ledger gained an owner per task (`assignee`: `principal` / `engineer:<lane>` / `junior:<lane>` / a specialist) and explicit dependencies, across four columns (pending · in-progress · done · blocked). Render it with `python3 hooks/ledger.py board .conductor/state.json`. Two workers can never hold the same task.
+- **A shared team board.** The `.ringmaster/` ledger gained an owner per task (`assignee`: `principal` / `engineer:<lane>` / `junior:<lane>` / a specialist) and explicit dependencies, across four columns (pending · in-progress · done · blocked). Render it with `python3 hooks/ledger.py board .ringmaster/state.json`. Two workers can never hold the same task.
 - **Principal → engineer → junior delegation.** Big work decomposes top-down into bounded lanes with complete context hand-offs, kept a shallow 2–3 levels deep; the principal owns the integration seams.
 - **The A-grade gate got teeth.** A `Stop` hook refuses to end a turn while an in-progress task is on record as failing its six-criterion gate (correct · secure · clean · complete · documented · explained). Conservative by design: an absent gate never traps; `waitingOnHuman` always allows a legitimate pause; it fails open on a missing/corrupt ledger.
 - **File-write rails.** `Write`/`Edit`/`MultiEdit`/`NotebookEdit` are gated: writing a live credential (real `sk_live_`/`AKIA…`/`ghp_` keys, PRIVATE KEY blocks) or into `.git/` internals is **denied**; a production env / key / credentials file **asks** first.
@@ -69,7 +78,7 @@ The "arms everywhere, installable by anyone" release.
 
 ### Added
 
-- **Continuity & resume.** The `.conductor/` ledger (`state.json` + human-readable `PROGRESS.md`), self-ignored by default for zero git footprint; say `pickup` (or `/conductor:pickup`) in any fresh session to reconcile against the repo and continue the highest-priority task.
+- **Continuity & resume.** The `.ringmaster/` ledger (`state.json` + human-readable `PROGRESS.md`), self-ignored by default for zero git footprint; say `pickup` (or `/ringmaster:pickup`) in any fresh session to reconcile against the repo and continue the highest-priority task.
 - **Right-sizing.** Every task gets a Task Profile (lane · model · effort · gate). Triage tunes ceremony, never safety: any change to production behavior always gets tests + the Security Gate.
 - **Model & effort routing.** Mechanically-trivial lanes downshift to a cheaper model behind the **model-independent** A-grade gate; work that fails the gate auto-escalates back to the premium model. Tokens saved on the easy parts; the bar held constant.
 - **Compaction on your terms.** `/compact` is recommended only at safe checkpoints, with the ledger saved first so nothing is lost.

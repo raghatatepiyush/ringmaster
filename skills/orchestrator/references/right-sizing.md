@@ -1,6 +1,6 @@
 # Right-Sizing — the Task Profile
 
-The cost of orchestration must be proportional to the task. A great conductor doesn't summon the full orchestra to play a single triangle note — and Conductor shouldn't spin up the Test Architect, the Security Gate, a review pass, and a fresh-context subagent to fix a typo in a comment. Right-sizing is how Conductor stays fast, tidy, and token-frugal on small work while still bringing the full machinery to bear on work that earns it. Read this in stage 1, the moment you've classified the task.
+The cost of orchestration must be proportional to the task. A great ringmaster doesn't call the whole troupe into the ring to juggle a single ball — and Ringmaster shouldn't spin up the Test Architect, the Security Gate, a review pass, and a fresh-context subagent to fix a typo in a comment. Right-sizing is how Ringmaster stays fast, tidy, and token-frugal on small work while still bringing the full machinery to bear on work that earns it. Read this in stage 1, the moment you've classified the task.
 
 The output of right-sizing is a single bundle — the **Task Profile** — computed once and recorded in the ledger.
 

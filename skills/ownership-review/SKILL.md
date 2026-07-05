@@ -5,7 +5,7 @@ description: "The ownership review - use when a developer must take 100% respons
 
 # Ownership Review
 
-Most code review asks one question: *is the code correct and safe?* Conductor already answers that — the **Security Gate** hunts vulnerabilities and the **code-review** pipeline hunts defects. This skill exists for the *other* question, the one the AI era makes urgent and no market tool answers well:
+Most code review asks one question: *is the code correct and safe?* Ringmaster already answers that — the **Security Gate** hunts vulnerabilities and the **code-review** pipeline hunts defects. This skill exists for the *other* question, the one the AI era makes urgent and no market tool answers well:
 
 > **Does the human who is about to take 100% responsibility for this change actually understand it?**
 
@@ -31,7 +31,7 @@ The same rails the orchestrator enforces (hook-backed, hold under skip-permissio
 
 ---
 
-## Where this sits in "code review with Conductor"
+## Where this sits in "code review with Ringmaster"
 
 ```
 Security Gate  →  code-review  →  Ownership Review  →  sign-off
@@ -81,7 +81,7 @@ The ownership sign-off is enforced by the **Stop hook** via a conditional `gate.
 3. **If the developer disengages**, or a *critical* answer can't be grounded: leave `gate.owned: false`, keep `waitingOnHuman: true`, and stop to ask. The sign-off is **not** honest yet — do not proceed.
 4. **Never set `owned: true` to escape the gate.** The one pattern the Stop hook is built to catch is a change marked done while its sign-off is on record as *not honest* (`owned: false` **and** `waitingOnHuman: false`). That composition means the tooth only ever bites the dishonest case — silently shipping an unowned change.
 
-> **No ledger?** For an ad-hoc "review my branch" with no `.conductor/` ledger, run the quiz and produce the record all the same — it just isn't hook-enforced (there's no task to record `owned` on). Say so honestly in the report: the sign-off is real, the *automatic* enforcement isn't active without a ledger.
+> **No ledger?** For an ad-hoc "review my branch" with no `.ringmaster/` ledger, run the quiz and produce the record all the same — it just isn't hook-enforced (there's no task to record `owned` on). Say so honestly in the report: the sign-off is real, the *automatic* enforcement isn't active without a ledger.
 
 ---
 
@@ -102,4 +102,4 @@ Emit the record from `references/signoff-and-evidence.md`. It reuses the house s
 
 - **`agents/comprehension.md`** — the comprehension examiner: the full question-generation rubric (risk-tiering, the five levels, the question taxonomy, the grounded question-bank format) and the grading rubric (answer-first, the four verdicts, confidence calibration, the anti-hallucination contract). **Read/execute in Stage 2.**
 - **`references/signoff-and-evidence.md`** — the Ownership Sign-off Record format, the honesty doctrine for what a sign-off may and may not claim, and the draft-and-paste (or Atlassian-MCP) evidence trail. **Read in Stages 3–4.**
-- **`skills/orchestrator/references/output-style.md`** — the house style shared across Conductor. **Read before printing.**
+- **`skills/orchestrator/references/output-style.md`** — the house style shared across Ringmaster. **Read before printing.**

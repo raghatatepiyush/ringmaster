@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Conductor — routing / Task-Profile helpers (pure). Stdlib-only, cross-platform.
+"""Ringmaster — routing / Task-Profile helpers (pure). Stdlib-only, cross-platform.
 
 The keystone: `gate` is a pure function of `lane`, NEVER of `model`. Downshifting
 a model to save tokens therefore cannot weaken the quality gate; work that fails

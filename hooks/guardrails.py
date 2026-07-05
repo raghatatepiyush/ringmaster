@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Conductor - safety gate (PreToolUse: Bash + Write/Edit/MultiEdit + every `mcp__*`)
+Ringmaster - safety gate (PreToolUse: Bash + Write/Edit/MultiEdit + every `mcp__*`)
 
 This is the hard, deterministic enforcement layer. A PreToolUse `deny` is
 evaluated *before* Claude Code's permission system, so it blocks the tool even
@@ -263,28 +263,28 @@ def targets_preprod(cmd: str) -> bool:
 # --- The policy (pure, importable, side-effect free) -------------------------
 
 _GIT_WRITE_MSG = (
-    "🛑 Conductor rail: no commit / push / merge / release / publish. Work was "
+    "🛑 Ringmaster rail: no commit / push / merge / release / publish. Work was "
     "staged for you to review and ship yourself."
 )
-_PROD_MSG = "🛑 Conductor rail: production is off-limits. Re-target DEV / UAT / PREPROD."
+_PROD_MSG = "🛑 Ringmaster rail: production is off-limits. Re-target DEV / UAT / PREPROD."
 _PR_MSG = (
-    "⏸ Conductor: opening/merging a PR is yours to confirm — Conductor won't do it on "
+    "⏸ Ringmaster: opening/merging a PR is yours to confirm — Ringmaster won't do it on "
     "its own. Approve to proceed, or I'll stage and hand off."
 )
 _DEPLOY_MSG = (
-    "⏸ Conductor: a deploy waits for your go — Conductor won't deploy on its own. "
+    "⏸ Ringmaster: a deploy waits for your go — Ringmaster won't deploy on its own. "
     "Approve to run this preview/dev deploy. (Production deploys are blocked entirely.)"
 )
-_PREPROD_MSG = "⏸ Conductor: this hits shared pre-prod/staging. Confirm before running."
+_PREPROD_MSG = "⏸ Ringmaster: this hits shared pre-prod/staging. Confirm before running."
 
 _PR_REASON = (
-    "Conductor never opens or merges pull requests on its own — that ships code and is "
+    "Ringmaster never opens or merges pull requests on its own — that ships code and is "
     "the human's call. This is paused for explicit confirmation: approve it if you "
-    "intended this, otherwise Conductor will stage the work with `git add <paths>` and "
+    "intended this, otherwise Ringmaster will stage the work with `git add <paths>` and "
     "hand it off."
 )
 _DEPLOY_REASON = (
-    "Conductor never deploys on its own. This is a non-production (preview/dev) deploy "
+    "Ringmaster never deploys on its own. This is a non-production (preview/dev) deploy "
     "paused for your explicit confirmation — approve to run it. Production deploys are "
     "blocked entirely; run those yourself."
 )
@@ -305,7 +305,7 @@ def _decide(command: str) -> Optional[Decision]:
     if verb:
         if verb == "publish/release":
             reason = (
-                "Conductor blocked a package/release publish step. Conductor never "
+                "Ringmaster blocked a package/release publish step. Ringmaster never "
                 "publishes packages or cuts releases in any mode - the human owns the "
                 "decision to ship. Stage your work with `git add <paths>` and hand it "
                 "off; the person will version, publish, or release it themselves. "
@@ -313,8 +313,8 @@ def _decide(command: str) -> Optional[Decision]:
             )
         else:
             reason = (
-                f"Conductor blocked a git operation that writes history "
-                f"('{verb}'). Conductor never commits, pushes, merges, or cuts releases "
+                f"Ringmaster blocked a git operation that writes history "
+                f"('{verb}'). Ringmaster never commits, pushes, merges, or cuts releases "
                 f"in any mode - the human owns the commit message, the review, and the "
                 f"decision to ship. Stage your work with `git add <paths>` instead and "
                 f"hand it off; the person will commit it themselves."
@@ -324,8 +324,8 @@ def _decide(command: str) -> Optional[Decision]:
     # Rule 2 - production targeting (hard deny). Catches `vercel --prod` too.
     if targets_prod(cmd):
         reason = (
-            "Conductor blocked a command that appears to target a PRODUCTION "
-            "environment (prod / production / live). Conductor never runs tests, "
+            "Ringmaster blocked a command that appears to target a PRODUCTION "
+            "environment (prod / production / live). Ringmaster never runs tests, "
             "deploys, or mutates anything against production - under any circumstances, "
             "even if it was explicitly approved. Re-point this at DEV, UAT, or PREPROD "
             "and try again."
@@ -457,7 +457,7 @@ def classify(command: str) -> Optional[Decision]:
         if inner is not None:
             dec, reason, msg = inner
             wrapped = (
-                "Conductor looked inside a wrapped runner (a make target, an "
+                "Ringmaster looked inside a wrapped runner (a make target, an "
                 "npm/yarn/pnpm script, or a shell script this command invokes) and "
                 "the resolved body triggers a rail. " + reason
             )
@@ -482,14 +482,14 @@ _GH_WRITE_TOOL = re.compile(
     r"push_files|create_or_update_file|delete_file)"
 )
 _GH_TOOL_MSG = (
-    "⏸ Conductor: that GitHub action writes to the repo (PR / push). Conductor won't do "
+    "⏸ Ringmaster: that GitHub action writes to the repo (PR / push). Ringmaster won't do "
     "it on its own — approve to proceed, or I'll stage and hand off."
 )
 _GH_TOOL_REASON = (
-    "Conductor blocked an autonomous GitHub write (open/merge a pull request, or push "
+    "Ringmaster blocked an autonomous GitHub write (open/merge a pull request, or push "
     "code) via an MCP tool — the Bash safety hook can't see MCP calls, so the rail is "
     "enforced here too. These ship code and are yours to confirm: approve if you "
-    "intended it, otherwise Conductor stages the work and hands it off."
+    "intended it, otherwise Ringmaster stages the work and hands it off."
 )
 
 
@@ -544,22 +544,22 @@ def _input_is_stripe_live(tool_input) -> bool:
 
 
 _MCP_PROD_REASON = (
-    "Conductor blocked an MCP tool call whose input targets a PRODUCTION environment. "
+    "Ringmaster blocked an MCP tool call whose input targets a PRODUCTION environment. "
     "Production is off-limits under any circumstances — even via an MCP specialist "
     "(database, deploy, infra, data). The Bash hook can't see MCP calls, so the prod "
     "rail is enforced here too. Re-point this at DEV / UAT / PREPROD and try again."
 )
 _VERCEL_PROD_REASON = (
-    "Conductor blocked a Vercel PRODUCTION deploy via an MCP tool. Production is "
-    "off-limits to Conductor under any circumstances — run a prod deploy yourself. "
+    "Ringmaster blocked a Vercel PRODUCTION deploy via an MCP tool. Production is "
+    "off-limits to Ringmaster under any circumstances — run a prod deploy yourself. "
     "Target preview/dev instead and I'll proceed on your confirm."
 )
 _STRIPE_LIVE_MSG = (
-    "🛑 Conductor rail: Stripe is in LIVE mode (real charges). Switch to test/sandbox "
-    "keys — Conductor never touches live billing."
+    "🛑 Ringmaster rail: Stripe is in LIVE mode (real charges). Switch to test/sandbox "
+    "keys — Ringmaster never touches live billing."
 )
 _STRIPE_LIVE_REASON = (
-    "Conductor blocked a Stripe MCP call that appears to run in LIVE mode (a live key "
+    "Ringmaster blocked a Stripe MCP call that appears to run in LIVE mode (a live key "
     "or livemode flag). Payments work happens in test/sandbox mode only — never live "
     "keys, never a real charge. Re-run with test-mode keys."
 )
@@ -640,29 +640,29 @@ _SENSITIVE_PATH = re.compile(
 )
 
 _SECRET_WRITE_MSG = (
-    "🛑 Conductor rail: that write contains what looks like a LIVE credential "
+    "🛑 Ringmaster rail: that write contains what looks like a LIVE credential "
     "(a real key/token/private key). Refusing to put a live secret on disk."
 )
 _SECRET_WRITE_REASON = (
-    "Conductor blocked a file write whose content matches a live-credential "
+    "Ringmaster blocked a file write whose content matches a live-credential "
     "pattern (a `sk_live_`/`AKIA…`/`ghp_` key or a PRIVATE KEY block). Writing a "
     "real secret into a file is exactly the mistake this rail exists to prevent - "
     "use a secrets manager or an untracked local file, never a value the agent "
     "bakes into the repo."
 )
-_GIT_INTERNALS_MSG = "🛑 Conductor rail: writing into .git/ internals is blocked."
+_GIT_INTERNALS_MSG = "🛑 Ringmaster rail: writing into .git/ internals is blocked."
 _GIT_INTERNALS_REASON = (
-    "Conductor blocked a write into the .git/ directory. Tampering with git "
+    "Ringmaster blocked a write into the .git/ directory. Tampering with git "
     "internals (config, refs, hooks) out from under the human is never a safe "
     "autonomous action - make the change through normal git porcelain, which the "
     "human runs."
 )
 _SENSITIVE_WRITE_MSG = (
-    "⏸ Conductor: this writes a production env / key / credentials file. "
+    "⏸ Ringmaster: this writes a production env / key / credentials file. "
     "Confirm before I touch it."
 )
 _SENSITIVE_WRITE_REASON = (
-    "Conductor paused a write to what looks like a production environment, key, "
+    "Ringmaster paused a write to what looks like a production environment, key, "
     "or credentials file. That can be legitimate, but it's high-blast-radius - "
     "approve if you intended it, otherwise point the write at a local/dev file."
 )

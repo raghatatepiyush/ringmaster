@@ -1,6 +1,6 @@
 # Hardening notes & threat model
 
-Conductor's rails are built to prevent **mistakes** — an over-eager agent, an auto-approved command, a `--dangerously-skip-permissions` session — not to defeat someone deliberately obfuscating a command to evade them. Within that threat model the design is deliberately layered and honest about its edges.
+Ringmaster's rails are built to prevent **mistakes** — an over-eager agent, an auto-approved command, a `--dangerously-skip-permissions` session — not to defeat someone deliberately obfuscating a command to evade them. Within that threat model the design is deliberately layered and honest about its edges.
 
 ## Two layers
 
@@ -19,7 +19,7 @@ for c in python3 python py; do "$c" -c pass </dev/null >/dev/null 2>&1 && exec "
 
 Probing by execution (not just `command -v` existence) matters on Windows: stock Windows 11 ships Microsoft-Store **stub** `python`/`python3` aliases that exist on PATH but only print "Python was not found" and exit. An existence check would pick the stub and the rails would go silently dark; the execution probe skips the fakes and finds a real install — including a `py`-launcher-only setup. This exact trap is simulated in CI on every push (see below).
 
-The shim fires on macOS, Linux, WSL, and Windows (where Claude Code runs hook commands through the Git-Bash `sh` bundled with Git for Windows). The hooks use only the Python standard library. If **no** working interpreter (or no POSIX `sh`) is found, the shim exits cleanly and the hard rail is simply *absent* — and **you'll see it**, because the SessionStart banner ("🎼 Conductor is active … Hard safety rails armed") won't appear. Its absence is your signal that only the behavioral layer is live: install Python (python.org or `winget install Python.Python.3`) and reload.
+The shim fires on macOS, Linux, WSL, and Windows (where Claude Code runs hook commands through the Git-Bash `sh` bundled with Git for Windows). The hooks use only the Python standard library. If **no** working interpreter (or no POSIX `sh`) is found, the shim exits cleanly and the hard rail is simply *absent* — and **you'll see it**, because the SessionStart banner ("🎪 Ringmaster is active … Hard safety rails armed") won't appear. Its absence is your signal that only the behavioral layer is live: install Python (python.org or `winget install Python.Python.3`) and reload.
 
 ## What the hook catches
 
@@ -64,7 +64,7 @@ A few bespoke vectors still pass the deterministic hook by design: a schemeless 
 
 The safety rails are only worth as much as their proof, so the adversarial battery runs automatically — not just on demand. [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) fires on every push and pull request and, with `fail-fast` off, runs the full suite across a matrix:
 
-- **OS:** `ubuntu-latest`, `windows-latest`, `macos-latest` — the three platforms Conductor claims to support, so the cross-platform promise (including Windows console-encoding handling) is exercised on real runners, not asserted.
+- **OS:** `ubuntu-latest`, `windows-latest`, `macos-latest` — the three platforms Ringmaster claims to support, so the cross-platform promise (including Windows console-encoding handling) is exercised on real runners, not asserted.
 - **Python:** `3.9` (minimum supported) → `3.11` → `3.13` → `3.14` (latest) — the hooks are standard-library only, so the span guards against syntax/stdlib drift with nothing to install.
 
 Each job:

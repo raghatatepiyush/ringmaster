@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Conductor - A-grade gate + ownership sign-off teeth (Stop hook).
+Ringmaster - A-grade gate + ownership sign-off teeth (Stop hook).
 
 The quality gate used to live only in prose: the orchestrator was *asked* to run
 tests + Security Gate + review and not ship failing work. This hook gives that
@@ -28,7 +28,7 @@ It guards two DISTINCT axes, both recorded on a task's `gate`:
 It is deliberately CONSERVATIVE - it must never trap a legitimate pause:
   * It respects `stop_hook_active`: if we already blocked once this turn, we let
     the stop through (no loops).
-  * It only fires when a `.conductor/state.json` ledger exists and an
+  * It only fires when a `.ringmaster/state.json` ledger exists and an
     *in_progress* task carries a `gate` record with an EXPLICIT failure
     (a criterion recorded as false). A simply-absent gate - or a simply-absent
     `owned` - is NOT a trap.
@@ -92,7 +92,7 @@ def build_reason(failing):
     owned_pending = any(c in SIGNOFF for _, cs in failing for c in cs)
 
     parts = [
-        "Conductor gate: an in-progress task is on record as NOT yet ready, so "
+        "Ringmaster gate: an in-progress task is on record as NOT yet ready, so "
         "don't finish here. " + bits + ". "
     ]
     if agrade_pending:
@@ -112,7 +112,7 @@ def build_reason(failing):
             "owned=true just to escape this gate. "
         )
     parts.append(
-        "Update the task's gate in .conductor/state.json, then continue. If you're "
+        "Update the task's gate in .ringmaster/state.json, then continue. If you're "
         "genuinely blocked, set that task to 'blocked' (with blockedBy) or set "
         "state.waitingOnHuman=true and ask your question - either lets you stop."
     )
@@ -144,7 +144,7 @@ def main() -> None:
     if isinstance(data, dict) and data.get("stop_hook_active"):
         sys.exit(0)
 
-    path = os.path.join(".conductor", "state.json")
+    path = os.path.join(".ringmaster", "state.json")
     if not os.path.isfile(path):
         sys.exit(0)
     try:

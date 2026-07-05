@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Conductor - adversarial test battery for the guardrails hook.
+Ringmaster - adversarial test battery for the guardrails hook.
 
 Runs the pure policy (guardrails.classify) against a matrix of commands and
 asserts the decision (deny / ask / allow). This is the battery the README
@@ -378,7 +378,7 @@ def main() -> int:
         failures.append((f"perf: {msg}", "-", "-"))
 
     total = len(CASES) + len(TOOL_CASES) + len(WRITE_CASES) + runner_total + perf_total
-    print(f"Conductor guardrails battery: {passed}/{total} cases as expected "
+    print(f"Ringmaster guardrails battery: {passed}/{total} cases as expected "
           f"({len(CASES)} Bash + {len(TOOL_CASES)} MCP-tool + {len(WRITE_CASES)} "
           f"Write/Edit + {runner_total} wrapped-runner + {perf_total} perf/ReDoS).")
     if failures:

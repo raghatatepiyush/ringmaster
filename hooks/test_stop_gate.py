@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Conductor - battery for the Stop gate (stdlib only).
+"""Ringmaster - battery for the Stop gate (stdlib only).
 
 Covers the two axes the hook guards - the six A-grade criteria and the
 conditional `owned` ownership sign-off - plus every conservative escape hatch
@@ -93,7 +93,7 @@ def run():
         failures.append("_failing_inprogress(owned false only) -> %r" % f)
 
     total = len(CASES) + 1 + 3 + 1  # cases + axes + 3 build_reason + failing_inprogress
-    print("Conductor stop-gate battery: %d/%d cases as expected." % (total - len(failures), total))
+    print("Ringmaster stop-gate battery: %d/%d cases as expected." % (total - len(failures), total))
     if failures:
         print("\nUnexpected results:")
         for x in failures:

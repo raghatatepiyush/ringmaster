@@ -1,14 +1,14 @@
 {
-  "name": "conductor",
-  "displayName": "Conductor",
-  "version": "2.3.0",
+  "name": "ringmaster",
+  "displayName": "Ringmaster",
+  "version": "2.4.0",
   "description": "Turns Claude Code into a disciplined engineering team: it frames the goal, plans behind an approval gate, routes each step to the best specialist plugin (with built-in fallbacks), and runs a bundled Test Architect, an adversarial Security Gate, and an ownership review that makes sure a developer genuinely understands AI-written code before signing off on it — then hands back staged work explained in plain language. Hard hook-enforced safety rails — verified by a 191-case CI battery on macOS, Linux, and Windows — ensure it never commits, pushes, merges, or publishes, never touches production, and always pauses for explicit confirmation before a PR or preview deploy. Stack-agnostic; the only dependency is Python 3.",
   "author": {
     "name": "Piyush Raghatate",
     "url": "https://github.com/raghatatepiyush"
   },
-  "homepage": "https://github.com/raghatatepiyush/conductor",
-  "repository": "https://github.com/raghatatepiyush/conductor",
+  "homepage": "https://github.com/raghatatepiyush/ringmaster",
+  "repository": "https://github.com/raghatatepiyush/ringmaster",
   "license": "MIT",
   "keywords": [
     "orchestration",

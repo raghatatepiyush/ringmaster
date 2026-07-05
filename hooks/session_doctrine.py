@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """
-Conductor — session bootstrap (SessionStart).
+Ringmaster — session bootstrap (SessionStart).
 
 Plain-text stdout from a SessionStart hook is injected into the model's context
 at the start of every session. We keep this deliberately short (token discipline)
 and let the orchestrator skill carry the detail, loaded only when a real task
-arrives. We also print a cheap, best-effort stack fingerprint so Conductor feels
+arrives. We also print a cheap, best-effort stack fingerprint so Ringmaster feels
 plug-and-play on whatever project it lands in, and — when a previous session left
 a ledger — a one-line resume hint so a fresh session knows work is waiting.
 """
@@ -70,12 +70,12 @@ def detect_stack() -> str:
 
 
 def detect_resume() -> str:
-    """Best-effort: if a Conductor ledger exists, summarize pending work in one line.
+    """Best-effort: if a Ringmaster ledger exists, summarize pending work in one line.
 
     Never raises — a missing or malformed ledger simply yields no hint, so the
     banner is never suppressed by a bad state file."""
     try:
-        path = os.path.join(".conductor", "state.json")
+        path = os.path.join(".ringmaster", "state.json")
         if not os.path.isfile(path):
             return ""
         with open(path, encoding="utf-8") as fh:
@@ -87,13 +87,13 @@ def detect_resume() -> str:
             return ""
         updated = state.get("updated", "a previous session")
         return ("▶ Resume available: %d pending · %d in-progress (from %s) "
-                "— say \"pickup\" or /conductor:pickup." % (pending, in_prog, updated))
+                "— say \"pickup\" or /ringmaster:pickup." % (pending, in_prog, updated))
     except Exception:
         return ""
 
 
 stack = detect_stack()
-stack_line = f"Detected stack signals here: {stack}." if stack else "No manifest detected yet — Conductor will fingerprint the stack when work begins."
+stack_line = f"Detected stack signals here: {stack}." if stack else "No manifest detected yet — Ringmaster will fingerprint the stack when work begins."
 resume_line = detect_resume()
 
 # This hook runs through the same interpreter-discovery shim as the guardrails
@@ -103,7 +103,7 @@ py = f"{sys.version_info.major}.{sys.version_info.minor}"
 runtime_line = f"Hard safety rails armed (hook running on {_os}, Python {py})."
 
 print(
-    f"""🎼 Conductor is active — you conduct a senior engineering team, not code alone. The full playbook lives in the `conductor:orchestrator` skill; read it before acting on any build/change/test/frontend/back-end/DB/payments/skill task. In short: clarify the real goal and plan in plain language, get a "go" before building anything substantial, route each step to the best specialist (with a built-in fallback if one's missing — never block), ship every production-code change with tests via the Test Architect and through the Security Gate before staging, and pretty-print every result in plain language a junior engineer could follow.
+    f"""🎪 Ringmaster is active — you direct a senior engineering team, not code alone. The full playbook lives in the `ringmaster:orchestrator` skill; read it before acting on any build/change/test/frontend/back-end/DB/payments/skill task. In short: clarify the real goal and plan in plain language, get a "go" before building anything substantial, route each step to the best specialist (with a built-in fallback if one's missing — never block), ship every production-code change with tests via the Test Architect and through the Security Gate before staging, and pretty-print every result in plain language a junior engineer could follow.
 
 Hard safety rails (enforced in code by a hook — they hold even under skip-permissions, so don't fight them, just work within them):
   • Stage only — never commit, push, merge, rebase, or cut a release. The human commits and ships.

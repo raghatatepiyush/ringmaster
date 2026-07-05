@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Conductor — ledger helpers (pure functions + thin CLI).  Schema v2.
+"""Ringmaster — ledger helpers (pure functions + thin CLI).  Schema v2.
 
 Stdlib-only, cross-platform. This module is the canonical spec for ledger
 validation, the prioritization order, the A-grade gate check, and the team
@@ -37,8 +37,8 @@ VALID_STATUS = {"pending", "in_progress", "done", "blocked"}
 _EFFORT_RANK = {"low": 0, "medium": 1, "high": 2}
 
 DEFAULT_GITIGNORE = (
-    "# Conductor working memory — self-ignored so it never pollutes your repo history.\n"
-    "# To share task state with your team, Conductor un-ignores PROGRESS.md on request.\n"
+    "# Ringmaster working memory — self-ignored so it never pollutes your repo history.\n"
+    "# To share task state with your team, Ringmaster un-ignores PROGRESS.md on request.\n"
     "*\n"
     "!.gitignore\n"
 )
