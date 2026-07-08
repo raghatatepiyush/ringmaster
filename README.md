@@ -32,6 +32,7 @@ Ringmaster auto-triggers: it frames the task, shows a short plan, waits for your
 | `/ringmaster:orchestrator` | invoke it explicitly |
 | `pickup` (or `/ringmaster:pickup`) | resume unfinished work from a previous session — even a teammate's |
 | `/ringmaster:test-architect` | go straight to the Test Architect — plan, write, run, or prune tests without a full build |
+| `"write test scenarios for PROJ-142"` | put the Test Architect in **Ringside** (requirements-first) mode — read your Jira/Confluence source of truth, grill it for gaps, and write brutally thorough, fully-traceable scenarios + an HTML/CSV coverage report *before* any test code |
 | `/ringmaster:ownership-review` | run just the ownership review on a branch/PR you must sign off on |
 | "go deep" | a one-off exhaustive pass: wider tests, an explicit security sweep, harder review |
 
@@ -41,7 +42,7 @@ Ringmaster auto-triggers: it frames the task, shows a short plan, waits for your
 | :-- | :-- |
 | 🎪 **A smart orchestrator** | classifies any request — frontend, feature, tests, bugfix, database, payments, docs, skill creation — and runs the right end-to-end playbook |
 | 🧭 **Routing with fallbacks** | dispatches the best specialist plugin for each step (`frontend-design`, `code-review`, `playwright`, `supabase`, `stripe`, `vercel`, `github`, `context7`, `superpowers`, …) and falls back to a competent built-in when one isn't installed — work never blocks |
-| 🧪 **A bundled Test Architect** | risk-based, red→green TDD, behavior-not-implementation assertions, stale-test pruning |
+| 🧪 **A bundled Test Architect** | risk-based, red→green TDD, behavior-not-implementation assertions, stale-test pruning — plus a **requirements-first "Ringside" mode** that reads your Jira/Confluence source of truth, interrogates it for gaps, and writes brutally thorough, fully-traceable test scenarios (with an HTML/CSV coverage report) *before* any code |
 | 🔒 **A bundled Security Gate** | a fresh-context adversarial reviewer that hunts secrets, injection, broken authz, crypto misuse — and **blocks hand-off** on critical findings |
 | ✍️ **An ownership review** | turns *"the AI wrote it"* into *"I understand it and I own it"* — a comprehension quiz grounded in your **actual diff**, answer-first, that teaches every hole in plain language, tells you where you were **confidently wrong** (the blind spots that cause 2am incidents), and records an **auditable sign-off** a `Stop` hook enforces. So "I take 100% responsibility" is backed by evidence, not a vibe |
 | 🗂️ **A resumable team board** | the `.ringmaster/` ledger tracks pending · in-progress · done · blocked with an owner and dependencies per task; any fresh session (or teammate) picks up exactly where the last one stopped |
@@ -64,6 +65,29 @@ A `PreToolUse` hook inspects every Bash command, every file write, and **every M
 | 🚦 Sees through wrapped runners | `make deploy`, `npm run ship`, `bash deploy.sh` are resolved and re-checked — one indirection can't smuggle a push or a prod hit |
 
 The hook is **allow-by-default** — normal dev (`npm test`, `git status`, `git add`, local servers) runs untouched, and it will never brick a tool. Every rail is proven by a **191-case adversarial battery** running in CI on Linux, Windows, and macOS across Python 3.9 → 3.14, on every push. The full threat model — what the hook catches, what it deliberately allows, and the honest edges — lives in **[docs/hardening.md](docs/hardening.md)**.
+
+## Prove it yourself
+
+Ringmaster's guarantees aren't marketing copy — they're an adversarial test suite you can run in seconds (standard-library Python, nothing to install). The CI badge above runs all of it on every push across **3 OSes × Python 3.9 → 3.14**; to reproduce it locally, from the plugin directory:
+
+```bash
+# use python3 — or `py` on Windows, where `python` may be the Microsoft Store stub
+python3 hooks/test_guardrails.py                              # the safety rails
+python3 hooks/test_ledger.py                                  # the resumable team board
+python3 hooks/test_routing.py                                 # the A-grade quality gate
+python3 hooks/test_stop_gate.py                               # the Stop-hook enforcement
+python3 skills/test-architect/assets/test_ringside_report.py  # Ringside's report generator
+```
+
+| The promise | Proven by | Result |
+| :-- | :-- | :--: |
+| No commit, push, merge, release, prod-hit, live-secret write, or autonomous PR/deploy ever slips through — **even under `--dangerously-skip-permissions`** | `test_guardrails.py` | **191 / 191** |
+| The team board (pending · in-progress · done · blocked, with owners + deps) stays correct, so any session — or teammate — resumes cleanly | `test_ledger.py` | **27 / 27** |
+| The six-criterion A-grade quality gate is enforced exactly as specified | `test_routing.py` | **6 / 6 criteria** |
+| The Stop hook blocks finishing on a failing gate or an unsigned ownership sign-off — and never traps a legitimate pause | `test_stop_gate.py` | **22 / 22** |
+| Ringside's coverage report escapes untrusted ticket text (XSS), neutralizes CSV formula injection, and flags any requirement missing failure-path coverage | `test_ringside_report.py` | **34 / 34** |
+
+That's **274 adversarial cases** across five batteries — plus end-to-end CI smokes for the launcher shim, the `deny / ask / allow` stdin path, and the ledger CLI. If any rail regressed, CI goes red before the change could ever reach you.
 
 ## How it works
 
@@ -90,7 +114,7 @@ ringmaster/
 ├── skills/
 │   ├── orchestrator/          # the ringmaster skill (thin router + references/)
 │   ├── ownership-review/      # bundled ownership review (comprehension quiz + auditable sign-off)
-│   └── test-architect/        # bundled Test Architect skill
+│   └── test-architect/        # bundled Test Architect (+ Ringside requirements-first mode & its 34-case report battery)
 ├── agents/
 │   ├── security-gate.md       # bundled adversarial security reviewer
 │   └── comprehension.md       # bundled comprehension examiner (the ownership review's brain)
@@ -115,7 +139,7 @@ Ringmaster **directs** the official specialists rather than replacing them: inst
 ## Learn more
 
 - **[docs/hardening.md](docs/hardening.md)** — the threat model: what the hook catches, what it deliberately allows, and how CI proves it on every push.
-- **[CHANGELOG.md](CHANGELOG.md)** — version history. New in **v2.3.0**: the ownership review — a bundled Ownership Review skill and Comprehension agent that make a developer genuinely understand AI-written code before sign-off, a conditional `gate.owned` flag in the Stop hook, and a 22-case Stop-gate test battery run across three OSes and Python 3.9 → 3.14.
+- **[CHANGELOG.md](CHANGELOG.md)** — version history. **Latest:** *Ringside* — a requirements-first mode of the Test Architect that reads your Jira/Confluence source of truth, interrogates it for genuine gaps, and writes brutally thorough, fully-traceable test scenarios with a self-contained HTML/CSV coverage report (34-case battery, security-gated). Before it: the ownership review — a comprehension quiz + an auditable `gate.owned` sign-off the Stop hook enforces.
 - **[skills/orchestrator/references/](skills/orchestrator/references/)** — the full doctrine: routing, playbooks, safety & environments, state & resume, team & delegation, right-sizing, model routing.
 
 ## License

@@ -2,6 +2,15 @@
 
 All notable changes to Ringmaster. Versions follow [semver](https://semver.org/); the format follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [Unreleased]
+
+**Ringside — requirements-first test scenarios.** A new mode of the bundled Test Architect for the people who own product quality (BAs, Test Analysts): it trusts the *requirement* and distrusts the *code*.
+
+### Added
+
+- **A requirements-first "Ringside" mode in the Test Architect** (`skills/test-architect/`). Where the Test Architect's existing modes drive tests from *code*, Ringside drives **scenarios** from the **source of truth**: it reads a Jira/Confluence (or Trello/Linear/Azure DevOps/GitHub Issues) ticket through a connection-agnostic, read-only adapter (Atlassian MCP → REST token → manual paste), **interrogates it for genuine gaps** with grounded, YAGNI-guarded questions, then writes brutally thorough, fully-traceable test **scenarios** (edge cases included) *before* any test code — handing the confirmed scenarios into the existing write→run phases. Its scenario brain runs on three deliberately-curated principles (YAGNI · SRP · AHA/DAMP) — each kept only because it changes a real scenario decision — with requirement→scenario traceability enforced by the schema, and it deliberately rejects the principles that don't fit requirements-first design. Full playbook in `references/requirements-first-scenarios.md`.
+- **A tested HTML + CSV coverage report generator** (`skills/test-architect/assets/ringside_report.py`, stdlib-only) that renders a self-contained, theme-aware HTML report and a re-importable requirement→scenario→coverage CSV — HTML-escaping untrusted ticket text and neutralizing CSV formula injection. Ships with a **34-case battery** (`test_ringside_report.py`) and cleared the bundled Security Gate before staging.
+
 ## [2.4.0] — 2026-07-05
 
 **The rename to Ringmaster.** The plugin's marketplace `name` collided with an existing community plugin of the same former name, so submissions showed *Published* but never synced into `marketplace.json`. Renaming to the unique, on-theme **`ringmaster`** — the one who runs the whole show and cues each act — resolves the collision: same tool, same rails, new name, verified clear in the community marketplace.

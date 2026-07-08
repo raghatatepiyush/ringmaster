@@ -5,3 +5,6 @@ __pycache__/
 # OS cruft
 .DS_Store
 Thumbs.db
+
+# Ringmaster runtime ledger (per-project working state — never part of the plugin)
+.ringmaster/

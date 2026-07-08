@@ -68,6 +68,9 @@ jobs:
       - name: Run the stop-gate battery
         run: python hooks/test_stop_gate.py
 
+      - name: Run the Ringside report-generator battery
+        run: python skills/test-architect/assets/test_ringside_report.py
+
       - name: Smoke-test the ledger CLI (validate / next / board / gate)
         shell: python
         run: |
