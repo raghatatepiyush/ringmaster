@@ -84,7 +84,7 @@ Dispatch each step to the best **specialist** (full map and invocation details i
 | Payments / billing / checkout | **stripe** plugin | Use the project's payment SDK against test mode |
 | "How does library X's current API work?" | **context7** | web search / the installed package's own docs |
 | Security review before staging | **Security Gate** (bundled agent) | — (always present) |
-| Code review of a change | **code-review** plugin | The bundled review pass (`references/output-style.md`) |
+| Code review of a change | **code-review** (bundled skill) | — (always present); external `code-review` plugin is an optional richer pass |
 | Owning an AI-written change (comprehension + sign-off) | **ownership-review** (bundled skill) | — (always present) |
 | Keeping CLAUDE.md / docs current | **CLAUDE.md** plugin | Edit the docs yourself |
 | Creating a skill or plugin | **skill-creator / plugin-dev** | Scaffold it to the documented structure |
@@ -105,7 +105,7 @@ Before you hand anything off, walk this gate in order:
 1. **Tests.** Any change to production behavior must ship with tests that cover the new/changed behavior — route to the **Test Architect**. Don't hand off code whose behavior nothing checks.
 2. **Self-verify.** Run the targeted tests, the linter, and the build/type-check. Watch them actually pass — don't claim done on faith.
 3. **Security Gate.** Dispatch the bundled **security-gate** agent (fresh context) on the working diff *before staging*. It blocks on critical findings — vulnerabilities, secrets, injection, broken authz. It reports defects; it does not fix them (the human decides).
-4. **Review.** Route to the **code-review** plugin, or run the bundled two-stage pass: first *does it match the plan/spec*, then *is the code quality sound* — with the adversarial eye of a senior engineer.
+4. **Review.** Route to the bundled **`code-review`** skill — it reviews the diff along **two axes run as parallel fresh-context sub-agents** (*Spec*: does it match the plan/spec, no more, no less? and *Standards*: is the code quality sound, with the adversarial eye of a senior engineer?), aggregates them into one report, and records `gate.clean`. (The external **code-review** plugin is an optional richer, confidence-scored pass.)
 5. **Ownership sign-off** *(when a human must take responsibility for an AI-written change).* Route to the bundled **`ownership-review`** skill. Detection (steps 3–4) asks *is the code correct and safe?*; this asks the different, AI-era question *does the person about to own it actually understand it?* It dispatches the **Comprehension** agent to generate diff-grounded questions, conducts an **answer-first** quiz in the main thread, teaches on every miss in plain language, calibrates the developer's confidence against how they actually did, and records an **auditable ownership sign-off**. This is a *separate axis* from the six A-grade criteria — recorded as the **conditional `gate.owned`** flag, which the Stop hook enforces (see `references/state-and-resume.md`). Skip it for trivial changes; never skip it on a change someone is signing their name to.
 6. **Docs.** If behavior, structure, or conventions changed, refresh **CLAUDE.md** and any project docs (via the CLAUDE.md plugin or directly) so the next session and the next engineer aren't working from a stale map.
 
@@ -136,4 +136,5 @@ Read each when its moment arrives — they keep this file lean while carrying th
 - **`references/right-sizing.md`** — the Task Profile and the trivial/standard/deep triage; ceremony scales with the task, safety never does. **Read in stage 1.**
 - **`references/model-and-effort.md`** — model/effort routing and the model-independent A-grade gate with auto-escalation. **Read in stage 1–2 when routing work.**
 - The bundled **Test Architect** skill (`skills/test-architect/`) carries the test craft and stack-detection cheat-sheet; route to it for all test work.
+- The bundled **Code Review** skill (`skills/code-review/`) runs the two-axis (Spec + Standards) review as parallel fresh-context sub-agents (`agents/code-reviewer.md`), aggregates them, and records the conditional `gate.clean`. **Route to it in stage 3 to review any substantial change.**
 - The bundled **Ownership Review** skill (`skills/ownership-review/`) carries the comprehension quiz and auditable sign-off that let a human take 100% responsibility for an AI-written change; it drives the **Comprehension** agent (`agents/comprehension.md`) and records the conditional `gate.owned`. **Route to it in stage 3 for any change someone must own.**

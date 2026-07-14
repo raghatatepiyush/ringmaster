@@ -70,7 +70,7 @@ The safety rails are only worth as much as their proof, so the adversarial batte
 Each job:
 
 1. validates the JSON manifests (`plugin.json`, `marketplace.json`, `hooks.json`);
-2. runs the **191-case** `hooks/test_guardrails.py` battery plus the `test_ledger.py` (27 cases) and `test_routing.py` batteries, and a cross-platform smoke of the `ledger.py` CLI that backs resume and the board/gate commands;
+2. runs the **191-case** `hooks/test_guardrails.py` battery, the `test_ledger.py` (27 cases) and `test_routing.py` batteries, the `test_stop_gate.py` Stop-gate battery (22 cases), and the `scenarios-from-requirements` report-generator battery (`skills/scenarios-from-requirements/assets/test_scenario_report.py`, 34 cases) — plus a cross-platform smoke of the `ledger.py` CLI that backs resume and the board/gate commands (**274 adversarial cases across five batteries** in all);
 3. drives the hook over **stdin end-to-end** — real `PreToolUse` payloads (a prod-deny, a Write-secret deny, an ask) with the decision asserted, plus a smoke of the `stop_gate.py` Stop hook;
 4. smoke-tests the **launcher shim itself** — extracting the *real* registered command from `hooks.json` and running it end-to-end, including a simulated Windows Store-stub trap (fake failing `python3`/`python` ahead of a working `py`) — so the one component outside the Python batteries is verified too.
 
@@ -84,4 +84,6 @@ Run the batteries yourself any time:
 python3 hooks/test_guardrails.py   # 191 adversarial cases (or `python` / `py`)
 python3 hooks/test_ledger.py       # 27 ledger cases
 python3 hooks/test_routing.py      # routing / A-grade gate
+python3 hooks/test_stop_gate.py    # 22 Stop-gate cases
+python3 skills/scenarios-from-requirements/assets/test_scenario_report.py  # 34 report-generator cases
 ```

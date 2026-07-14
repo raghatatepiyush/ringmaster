@@ -6,5 +6,8 @@ __pycache__/
 .DS_Store
 Thumbs.db
 
+# Local Claude Code workspace config (per-developer; never part of the plugin)
+.claude/
+
 # Ringmaster runtime ledger (per-project working state — never part of the plugin)
 .ringmaster/

@@ -122,18 +122,18 @@ When the Test Architect or Security Gate produces its *own* report for a sub-ste
 
 ---
 
-## The two-stage review output (fallback when `code-review` isn't installed)
+## The two-stage review output (the bundled `code-review` skill's report format)
 
-When you run the built-in review pass, print it in two clearly separated stages so it reads like a real review, not a vibe check:
+The bundled `code-review` skill aggregates its two parallel axes into this block, and the orchestrator prints it. Two clearly separated stages so it reads like a real review, not a vibe check:
 
 ```
 #### 🔍 Review
 
-**Stage 1 — Does it match the plan?**
-> <Does the change do what was agreed, no more, no less? Scope creep? Missing acceptance criteria?>
+**Stage 1 — Spec: does it match the plan?**
+> <Does the change do what was agreed, no more, no less? Scope creep? Missing acceptance criteria? (from the code-reviewer `Axis: Spec` sub-agent)>
 
-**Stage 2 — Is the code sound?**
-> <Correctness, edge cases, readability, naming, error handling, duplication. The adversarial eye of a senior engineer: what would break, what's fragile, what's unclear.>
+**Stage 2 — Standards: is the code sound?**
+> <Correctness, edge cases, readability, naming, error handling, duplication. The adversarial eye of a senior engineer: what would break, what's fragile, what's unclear. (from the code-reviewer `Axis: Standards` sub-agent)>
 
 Verdict: ✅ Clean  /  ⚠️ Notes (listed above)  /  🛑 Needs changes before hand-off
 ```

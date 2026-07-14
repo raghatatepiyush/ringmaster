@@ -18,7 +18,7 @@ Two markers appear throughout:
 4. **Tests** via the **Test Architect** — component/render tests for the important states (empty, loading, error, populated) and the responsive behavior that matters.
 5. **Self-verify** — run those tests, the linter, the build/type-check; watch them pass.
 6. **Security Gate** on the diff (XSS sinks, unsafe `dangerouslySetInnerHTML`/`v-html`, leaked keys in client code). 🚦 blocks on critical.
-7. **Review** via `code-review` (fallback: two-stage pass).
+7. **Review** via the bundled **`code-review`** skill (Spec ‖ Standards, parallel fresh-context sub-agents; records `gate.clean`).
 8. **Docs** — note the new components/conventions in CLAUDE.md if they set a pattern.
 9. **Stage** the touched paths with `git add <paths>`. 🚦 **never commit.** Print the final report + "in plain terms".
 
@@ -41,7 +41,7 @@ Same spine, narrower blast radius. Read the component under change plus a neighb
    - Repeat per behavior. Favor YAGNI and DRY; keep increments small and verifiable.
 5. **Self-verify** — targeted tests, linter, build/type-check, all green and watched.
 6. **Security Gate** on the working diff. 🚦 blocks on critical (injection, authz holes, secrets, crypto misuse, risky deps).
-7. **Review** via `code-review` (fallback: two-stage pass — matches-spec, then quality).
+7. **Review** via the bundled **`code-review`** skill — Spec (matches the ticket, no more, no less?) ‖ Standards (is the code sound?), run as parallel fresh-context sub-agents; records `gate.clean`.
 8. **Docs** — refresh CLAUDE.md / project docs if behavior, structure, or conventions changed.
 9. **Stage** touched paths only. 🚦 **never commit/push/merge.** Final report + status + "in plain terms".
 

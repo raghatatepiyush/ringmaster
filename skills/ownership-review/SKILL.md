@@ -41,7 +41,7 @@ Security Gate  →  code-review  →  Ownership Review  →  sign-off
                                      calibrate)           trail)
 ```
 
-Detection runs **first** — you can't honestly own a change that's still broken. If the Security Gate or code-review haven't run on this diff yet, trigger them (or the bundled fallbacks) before comprehension. Fold their findings into the questions: a defect they flagged is exactly the kind of thing the developer should be made to understand before signing.
+Detection runs **first** — you can't honestly own a change that's still broken. If the Security Gate or the bundled **`code-review`** skill haven't run on this diff yet, trigger them before comprehension. Fold their findings into the questions: a defect they flagged is exactly the kind of thing the developer should be made to understand before signing.
 
 ---
 
@@ -53,7 +53,7 @@ Get the change: `git diff` (working/staged) or the PR. Risk-tier it using the co
 
 ### Stage 1 — Detection (reuse, never rebuild)
 
-Confirm the diff has cleared the **Security Gate** and **code-review** (route to them, or run the bundled passes — see `skills/orchestrator/references/routing-and-plugins.md` and `skills/orchestrator/references/output-style.md`). This skill adds a layer; it does not duplicate theirs. Carry their headline findings into Stage 2.
+Confirm the diff has cleared the **Security Gate** (`agents/security-gate.md`) and the bundled **`code-review`** skill (`skills/code-review/`) — route to them, or to the external `code-review` plugin if it's installed (see `skills/orchestrator/references/routing-and-plugins.md` and `skills/orchestrator/references/output-style.md`). This skill adds a layer; it does not duplicate theirs. Carry their headline findings into Stage 2.
 
 ### Stage 2 — Comprehension (the heart) — two phases
 

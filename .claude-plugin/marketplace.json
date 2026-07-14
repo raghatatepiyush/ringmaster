@@ -1,6 +1,6 @@
 {
   "name": "ringmaster",
-  "description": "Home of Ringmaster — a safety-railed orchestration layer that turns Claude Code into a disciplined engineering team: it plans behind an approval gate, routes work to specialist plugins, tests and security-reviews every change, and stages the result for you to ship.",
+  "description": "Home of Ringmaster — a safety-railed orchestration layer that turns Claude Code into a disciplined engineering team: it plans behind an approval gate, routes work to specialist plugins, then puts every change through tests, an adversarial security gate, a two-axis code review, and an ownership check before staging the result for you to ship.",
   "owner": {
     "name": "Piyush Raghatate",
     "url": "https://github.com/raghatatepiyush"
@@ -9,7 +9,7 @@
     {
       "name": "ringmaster",
       "source": "./",
-      "description": "A safety-railed orchestration layer for Claude Code: frames any task, plans behind an approval gate, routes each step to the best specialist plugin (or a built-in fallback), tests and security-reviews every change, makes sure the developer genuinely understands AI-written code before they own it, and stages the result for the human to ship. Hook-enforced rails: never commits or pushes, never touches production — even under skip-permissions. (The rails arm via Python 3; the SessionStart banner is your proof they're live.)"
+      "description": "A safety-railed orchestration layer for Claude Code: frames any task, plans behind an approval gate, routes each step to the best specialist plugin (or a built-in fallback), tests, security-reviews, and code-reviews every change, makes sure the developer genuinely understands AI-written code before they own it, and stages the result for the human to ship. Hook-enforced rails: never commits or pushes, never touches production — even under skip-permissions. (The rails arm via Python 3; the SessionStart banner is your proof they're live.)"
     }
   ]
 }

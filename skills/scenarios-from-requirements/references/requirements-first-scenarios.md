@@ -177,10 +177,10 @@ Then **HALT** for the user to confirm the scenarios (point 9) before anything is
 
 ## 7. Phase 3 — Report + handoff
 
-**Generate the coverage report (HTML + CSV).** Run the bundled generator on the scenario JSON — use `python3`, or `py` on a stock-Windows box where `python` is the Microsoft Store stub (the same interpreter probe the hooks use):
+**Generate the coverage report (HTML + CSV).** Run the bundled generator on the scenario JSON — use `python3`, or `py` on a stock-Windows box where `python` is the Microsoft Store stub (the same interpreter probe the hooks use). `<plugin-root>` is Ringmaster's install directory — the plugin folder that holds `skills/`; in a checkout of this repo, it's just `.`:
 
 ```
-python3 skills/scenarios-from-requirements/assets/scenario_report.py <scenarios.json> --out <dir>
+python3 <plugin-root>/skills/scenarios-from-requirements/assets/scenario_report.py <scenarios.json> --out <dir>
 # writes <dir>/scenario-report.html  and  <dir>/scenario-matrix.csv
 ```
 

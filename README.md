@@ -65,6 +65,7 @@ Every part of Ringmaster has **one clear job**. Here's who does what — and why
 | 🧪 **Test Architect** | Writes and maintains tests in whatever language & framework you use — risk-first, red→green, asserting *behavior* so they survive refactors — and prunes dead ones. Never edits production code to force a green. **Every change ships with tests that actually bite, not coverage theater.** | `skill` · auto, or `/ringmaster:test-architect` |
 | 🎟️ **Scenarios from Requirements** | The **requirements-first** sibling of the Test Architect. Reads a Jira/Confluence ticket (your source of truth), grills it for gaps, and writes brutally thorough, fully-traceable **scenarios** — plus a self-contained HTML/CSV coverage report — *before* any code exists. **Test Architect goes `code → tests`; this goes `requirement → scenarios → tests`.** Built for BAs & Test Analysts who trust the spec and distrust the code. | `skill` · `/ringmaster:scenarios-from-requirements` |
 | 🔒 **Security Gate** | Before a risky change leaves your machine, a fresh, paranoid reviewer reads the diff for secrets, injection, broken authorization, and crypto misuse — and **blocks the hand-off** on anything critical. **Catches the one bug everyone else was too close to see.** | `agent` · auto-dispatched before staging |
+| 🔍 **Code Review** | Reviews your change along **two axes at once, run as parallel reviewers that never see each other's context** — *Spec* (did it build what the ticket asked, no more, no less?) and *Standards* (is the code correct, safe on its edges, and clean?). Aggregates both and records the `clean` quality gate. **Two lenses kept uncontaminated — so scope creep and sloppy code both get caught.** | `skill` · auto in stage 3, or `/ringmaster:code-review` |
 | ✍️ **Ownership Review** | A short quiz built from your **actual diff** that proves *you* understand the change before you sign off — you answer first, it teaches on every miss, and flags where you were *confidently wrong*. Records an auditable sign-off a `Stop` hook enforces. **Turns "the AI wrote it" into "I understand it and I own it."** | `skill` · `/ringmaster:ownership-review` |
 | 🗂️ **Ledger + resume** | A tiny team board (the `.ringmaster/` folder) tracking every task as **pending · in-progress · done · blocked**, each with an owner and its dependencies. **Any session — or a teammate — resumes exactly where the last one stopped.** | `command` · `/ringmaster:pickup` |
 
@@ -126,7 +127,7 @@ That's **274 adversarial cases** across five batteries — plus end-to-end CI sm
 
 Every substantial task follows the same pipeline — and it always halts for your approval before building anything real:
 
-**Frame & classify → plan (🛑 halt for your "go") → route & build → tests → 🔒 Security Gate → review → ✍️ ownership sign-off → docs → 📦 stage & report.**
+**Frame & classify → plan (🛑 halt for your "go") → route & build → tests → 🔒 Security Gate → 🔍 code review → ✍️ ownership sign-off → docs → 📦 stage & report.**
 
 Under the hood, each skill's `SKILL.md` is a lean router; the depth lives in reference files loaded only when their moment comes (*progressive disclosure*), so the system stays token-light on every run.
 
@@ -148,11 +149,13 @@ ringmaster/
 │   └── test_*.py              # the batteries (guardrails 191 · ledger 27 · routing · stop-gate 22)
 ├── skills/
 │   ├── orchestrator/                # the Orchestrator — the ringmaster (thin router + references/)
+│   ├── code-review/                 # the Code Review — two-axis (Spec + Standards) parallel review
 │   ├── ownership-review/            # the Ownership Review — comprehension quiz + auditable sign-off
 │   ├── test-architect/              # the Test Architect — tests for existing code (risk-first, red→green)
 │   └── scenarios-from-requirements/ # requirements-first scenarios from a Jira/spec (before code) + 34-case report battery
 ├── agents/
 │   ├── security-gate.md       # the Security Gate — adversarial security reviewer
+│   ├── code-reviewer.md       # the Code Reviewer — one axis per dispatch (Spec | Standards)
 │   └── comprehension.md       # the Comprehension examiner (the Ownership Review's brain)
 ├── docs/hardening.md          # threat model + CI proof
 └── .ringmaster/                # (runtime, per-project) the ledger — self-ignored
@@ -181,7 +184,7 @@ No banner at session start means the rails aren't armed and only the behavioral 
 ## Learn more
 
 - **[docs/hardening.md](docs/hardening.md)** — the threat model: what the hook catches, what it deliberately allows, and how CI proves it on every push.
-- **[CHANGELOG.md](CHANGELOG.md)** — version history. **Latest:** the `scenarios-from-requirements` skill — reads your Jira/Confluence source of truth, interrogates it for genuine gaps, and writes brutally thorough, fully-traceable test scenarios with a self-contained HTML/CSV coverage report (34-case battery, security-gated). Before it: the Ownership Review — a comprehension quiz + an auditable `gate.owned` sign-off the Stop hook enforces.
+- **[CHANGELOG.md](CHANGELOG.md)** — version history. **Latest:** the bundled **Code Review** skill — a two-axis (Spec + Standards) review run as parallel fresh-context sub-agents that records the `clean` quality gate the Stop hook enforces. Before it: the `scenarios-from-requirements` skill — requirements-first, fully-traceable test scenarios with a self-contained HTML/CSV coverage report.
 - **[skills/orchestrator/references/](skills/orchestrator/references/)** — the full doctrine: routing, playbooks, safety & environments, state & resume, team & delegation, right-sizing, model routing.
 
 ---
